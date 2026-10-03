@@ -60,3 +60,4 @@ Essendo strutturato come **monolite a file singolo** (`index.html`), non necessi
 1. Clona il repository:
    ```bash
    git clone [https://github.com/](https://github.com/)<tuo-username>/<nome-repository>.git
+.
