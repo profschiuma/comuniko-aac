@@ -1,0 +1,3196 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Comuniko AAC</title>
+
+  <!-- META TAG PER INSTALLAZIONE COME WEB APP (PWA / iOS / Android) -->
+  <meta name="theme-color" content="#1e3a8a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Comuniko AAC">
+  <meta name="application-name" content="Comuniko AAC">
+
+  <!-- FAVICON & APPLE TOUCH ICON EMBEDDED -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Cpath d='M125 15 C95 15 80 32 80 48 C80 58 87 67 98 73 L94 88 L111 81 C115 82 120 83 125 83 C148 83 160 67 160 48 C160 30 145 15 125 15 Z' fill='%23FFA726'/%3E%3Ccircle cx='106' cy='48' r='4.5' fill='%23FFF'/%3E%3Ccircle cx='125' cy='48' r='4.5' fill='%23FFF'/%3E%3Ccircle cx='144' cy='48' r='4.5' fill='%23FFF'/%3E%3Cpath d='M10 114 C38 110 62 112 80 126 C98 112 122 110 150 114' stroke='%231E3A8A' stroke-width='9' stroke-linecap='round' fill='none'/%3E%3Cpath d='M80 74 L80 126' stroke='%231E3A8A' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M76 68 C58 56 36 54 14 58 L14 104 C36 100 58 102 76 114 Z' fill='%233B82F6'/%3E%3Cpath d='M84 68 C102 56 124 54 146 58 L146 104 C124 100 102 102 84 114 Z' fill='%2322C55E'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'%3E%3Crect width='160' height='160' rx='36' fill='%23FFFFFF'/%3E%3Cpath d='M125 15 C95 15 80 32 80 48 C80 58 87 67 98 73 L94 88 L111 81 C115 82 120 83 125 83 C148 83 160 67 160 48 C160 30 145 15 125 15 Z' fill='%23FFA726'/%3E%3Ccircle cx='106' cy='48' r='4.5' fill='%23FFF'/%3E%3Ccircle cx='125' cy='48' r='4.5' fill='%23FFF'/%3E%3Ccircle cx='144' cy='48' r='4.5' fill='%23FFF'/%3E%3Cpath d='M10 114 C38 110 62 112 80 126 C98 112 122 110 150 114' stroke='%231E3A8A' stroke-width='9' stroke-linecap='round' fill='none'/%3E%3Cpath d='M80 74 L80 126' stroke='%231E3A8A' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='M76 68 C58 56 36 54 14 58 L14 104 C36 100 58 102 76 114 Z' fill='%233B82F6'/%3E%3Cpath d='M84 68 C102 56 124 54 146 58 L146 104 C124 100 102 102 84 114 Z' fill='%2322C55E'/%3E%3C/svg%3E">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+    }
+
+    .app-header {
+      background: #ffffff;
+      border-bottom: 2px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 8px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-logo-svg {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1e3a8a;
+      line-height: 1;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      letter-spacing: -0.5px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 8px 12px;
+      min-height: 40px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.05s, border-color 0.15s;
+      user-select: none;
+      white-space: nowrap;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: #2563eb; color: #ffffff; border-color: #1d4ed8; }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-accent { background: #7c3aed; color: #ffffff; border-color: #6d28d9; }
+    .btn-accent:hover { background: #6d28d9; }
+    .btn-secondary { background: #f8fafc; color: #334155; border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-success { background: #16a34a; color: #ffffff; border-color: #15803d; }
+    .btn-success:hover { background: #15803d; }
+    .btn-danger { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-sm { padding: 6px 10px; font-size: 0.78rem; min-height: 36px; border-radius: 8px; }
+
+    .select-input, .text-input {
+      padding: 8px 11px;
+      min-height: 40px;
+      border-radius: 9px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 0.88rem;
+      background: #ffffff;
+      color: #0f172a;
+      outline: none;
+      font-family: inherit;
+      font-weight: 700;
+    }
+    .select-input:focus, .text-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    .main-container {
+      max-width: 1280px;
+      margin: 12px auto;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      width: 100%;
+    }
+    .box-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    @media (min-width: 768px) {
+      .input-row { flex-direction: row; align-items: stretch; }
+    }
+    .textarea-box {
+      flex: 1;
+      position: relative;
+    }
+    .textarea-box textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 10px 42px 10px 12px;
+      border-radius: 12px;
+      border: 2px solid #cbd5e1;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      outline: none;
+      resize: vertical;
+      font-family: inherit;
+    }
+    .textarea-box textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+    }
+    .textarea-box .btn-inline-tts {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      touch-action: manipulation;
+    }
+    .input-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (min-width: 768px) {
+      .input-actions { display: flex; flex-direction: column; justify-content: center; min-width: 200px; }
+    }
+    .input-actions .btn-primary {
+      grid-column: 1 / -1;
+    }
+
+    .didactic-bar {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+    }
+    @media (min-width: 768px) {
+      .didactic-bar { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+    .didactic-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .case-toggle {
+      display: flex;
+      background: #e2e8f0;
+      border-radius: 8px;
+      padding: 2px;
+    }
+    .case-btn {
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: #475569;
+      cursor: pointer;
+      border-radius: 6px;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+    .case-btn.active {
+      background: #ffffff;
+      color: #2563eb;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    .fading-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 5px 10px;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 170px;
+    }
+    .fading-control input[type="range"] {
+      cursor: pointer;
+      width: 80px;
+      flex: 1;
+    }
+
+    .strip-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .strip-header-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .counter-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    #workspace {
+      min-height: 230px;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 12px;
+      transition: background-color 0.2s;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .fitz-yellow { border-color: #FBC02D !important; background: #FFF9C4 !important; }
+    .fitz-green  { border-color: #2E7D32 !important; background: #E8F5E9 !important; }
+    .fitz-orange { border-color: #EF6C00 !important; background: #FFE0B2 !important; }
+    .fitz-blue   { border-color: #0288D1 !important; background: #E1F5FE !important; }
+    .fitz-pink   { border-color: #C2185B !important; background: #FCE4EC !important; }
+    .fitz-white  { border-color: #90A4AE !important; background: #ECEFF1 !important; }
+
+    .caa-card {
+      width: 140px;
+      min-height: 205px;
+      background: #ffffff;
+      border-radius: 14px;
+      border: 3.5px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 4px;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      transition: transform 0.15s, box-shadow 0.15s;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+    .caa-card:active { cursor: grabbing; }
+    .caa-card.dragging { opacity: 0.35; transform: scale(0.95); }
+    .caa-card.drag-over {
+      border: 3.5px dashed #2563eb !important;
+      background: #eff6ff !important;
+    }
+    .caa-card.tts-active {
+      box-shadow: 0 0 0 5px #3b82f6, 0 8px 18px rgba(37,99,235,0.3) !important;
+      transform: scale(1.05) !important;
+      z-index: 10;
+    }
+
+    .card-top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+    .card-mini-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #334155;
+      padding: 0;
+      font-weight: 800;
+      touch-action: manipulation;
+    }
+    .card-mini-btn:hover { background: #f1f5f9; color: #000; }
+    .card-mini-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+    .card-actions-group { display: flex; align-items: center; gap: 2px; }
+
+    .card-text-container {
+      width: 100%;
+      min-height: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 2px 0;
+    }
+    .card-label-text {
+      width: 100%;
+      text-align: center;
+      font-size: 0.92rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: #0f172a;
+      transition: opacity 0.2s ease;
+      font-family: 'Fredoka', system-ui, sans-serif;
+      word-break: break-word;
+      line-height: 1.1;
+    }
+    .text-mode-dashed .card-label-text {
+      color: transparent !important;
+      -webkit-text-stroke: 1.8px #334155;
+      stroke-dasharray: 4px 3px;
+      font-weight: 800;
+    }
+    .letter-dashes-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      width: 100%;
+      margin-top: 3px;
+    }
+    .letter-slot {
+      display: inline-block;
+      width: 12px;
+      height: 2.5px;
+      background: #0f172a;
+      border-radius: 1px;
+    }
+    .letter-slot.space {
+      background: transparent;
+      width: 6px;
+    }
+
+    .card-img-wrapper {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      overflow: hidden;
+    }
+    .card-img-wrapper img {
+      max-width: 100%;
+      max-height: 94px;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .card-placeholder-icon {
+      font-size: 2.2rem;
+      color: #94a3b8;
+    }
+
+    .card-footer-controls {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .fitz-quick-select {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      font-size: 0.68rem;
+      padding: 3px 2px;
+      border-radius: 5px;
+      border: 1px solid #94a3b8;
+      background: #ffffff;
+      font-weight: 800;
+      color: #1e293b;
+      cursor: pointer;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    .add-card-placeholder {
+      width: 140px;
+      height: 205px;
+      border: 3px dashed #94a3b8;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: #475569;
+      padding: 12px;
+      text-align: center;
+      touch-action: manipulation;
+    }
+    .add-card-placeholder:hover, .add-card-placeholder:active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #1d4ed8;
+      transform: translateY(-2px);
+    }
+    .add-card-placeholder .plus-circle {
+      width: 44px;
+      height: 44px;
+      background: #e2e8f0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #1e293b;
+    }
+    .add-card-placeholder:hover .plus-circle, .add-card-placeholder:active .plus-circle {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .empty-state {
+      padding: 40px 12px;
+      text-align: center;
+      color: #94a3b8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .empty-state .empty-icon { font-size: 3rem; }
+    .empty-state h3 { font-size: 1.05rem; color: #475569; font-weight: 800; }
+
+    .legend-box {
+      font-size: 0.78rem;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: #475569;
+    }
+    .legend-title {
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 800;
+      border: 2px solid;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 18px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 92vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 10;
+    }
+    .modal-header h3 { font-size: 1.1rem; font-weight: 900; color: #1e3a8a; }
+    .btn-close-modal {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #94a3b8;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    .btn-close-modal:hover { background: #f1f5f9; color: #0f172a; }
+    .modal-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-footer {
+      padding: 10px 16px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      background: #f8fafc;
+      border-bottom-left-radius: 18px;
+      border-bottom-right-radius: 18px;
+      position: sticky;
+      bottom: 0;
+      z-index: 10;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .preview-picto-btn {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .preview-picto-btn:hover, .preview-picto-btn:active { border-color: #2563eb; background: #eff6ff; }
+    .preview-picto-btn.selected { border-color: #2563eb; background: #dbeafe; box-shadow: 0 0 0 2px #2563eb; }
+    .preview-picto-btn img { width: 46px; height: 46px; object-fit: contain; }
+    .preview-picto-btn span { font-size: 0.65rem; color: #64748b; margin-top: 3px; }
+
+    .vocab-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .vocab-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 8px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      gap: 6px;
+    }
+    .vocab-item-info { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+    .vocab-item-img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .app-footer {
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      padding: 16px 14px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: auto;
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-links a, .footer-links button {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 700;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: inherit;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      left: 20px;
+      max-width: 380px;
+      margin: 0 auto;
+      background: #1e293b;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    @media print {
+      @page { size: A4; margin: 8mm; }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .no-print, .app-header, .app-footer, .box-card:first-child, .legend-box, .modal-overlay, #toast, .card-top-bar, .card-footer-controls, .add-card-placeholder {
+        display: none !important;
+      }
+      .main-container { margin: 0 !important; padding: 0 !important; max-width: 100% !important; }
+      #workspace-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+      #workspace { border: none !important; background: transparent !important; padding: 0 !important; }
+      .print-mode-grid #cards-container {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 16px !important;
+      }
+      .print-mode-grid .caa-card {
+        width: 100% !important;
+        min-height: 195px !important;
+        border: 2.5px dashed #000000 !important;
+        border-radius: 8px !important;
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        position: relative !important;
+        padding: 8px 6px !important;
+      }
+      .print-mode-grid .caa-card::before {
+        content: '✂' !important;
+        position: absolute !important;
+        top: -12px !important;
+        left: 8px !important;
+        font-size: 14px !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        padding: 0 4px !important;
+      }
+      .print-mode-strip #cards-container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+      }
+      .print-mode-strip .caa-card {
+        width: 125px !important;
+        min-height: 175px !important;
+        border-radius: 8px !important;
+        page-break-inside: avoid;
+        box-shadow: none !important;
+        padding: 6px 4px !important;
+      }
+      .fitz-yellow { border-color: #FBC02D !important; background: #FFF9C4 !important; }
+      .fitz-green  { border-color: #2E7D32 !important; background: #E8F5E9 !important; }
+      .fitz-orange { border-color: #EF6C00 !important; background: #FFE0B2 !important; }
+      .fitz-blue   { border-color: #0288D1 !important; background: #E1F5FE !important; }
+      .fitz-pink   { border-color: #C2185B !important; background: #FCE4EC !important; }
+      .fitz-white  { border-color: #90A4AE !important; background: #ECEFF1 !important; }
+      .card-label-text { color: #000000 !important; }
+      .text-mode-dashed .card-label-text {
+        color: transparent !important;
+        -webkit-text-stroke: 1.8px #000000 !important;
+      }
+      .letter-slot { background: #000000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="app-header no-print">
+    <div class="header-inner">
+      <div class="brand">
+        <svg class="brand-logo-svg" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M125 15 C95 15 80 32 80 48 C80 58 87 67 98 73 L94 88 L111 81 C115 82 120 83 125 83 C148 83 160 67 160 48 C160 30 145 15 125 15 Z" fill="#FFA726"/>
+          <circle cx="106" cy="48" r="4.5" fill="#FFFFFF"/>
+          <circle cx="125" cy="48" r="4.5" fill="#FFFFFF"/>
+          <circle cx="144" cy="48" r="4.5" fill="#FFFFFF"/>
+          <path d="M80 120 C62 106 38 106 12 110 L12 62 C38 58 62 60 80 72 C98 60 122 58 148 62 L148 110 C122 106 98 106 80 120 Z" fill="#2563EB" opacity="0.15"/>
+          <path d="M10 114 C38 110 62 112 80 126 C98 112 122 110 150 114" stroke="#1E3A8A" stroke-width="7" stroke-linecap="round"/>
+          <path d="M80 74 L80 126" stroke="#1E3A8A" stroke-width="5" stroke-linecap="round"/>
+          <path d="M76 68 C58 56 36 54 14 58 L14 104 C36 100 58 102 76 114 Z" fill="#3B82F6"/>
+          <circle cx="45" cy="76" r="6" fill="#FFFFFF"/>
+          <path d="M35 96 C35 88 40 85 45 85 C50 85 55 88 55 96 Z" fill="#FFFFFF"/>
+          <path d="M84 68 C102 56 124 54 146 58 L146 104 C124 100 102 102 84 114 Z" fill="#22C55E"/>
+          <circle cx="115" cy="85" r="9" fill="#FFFFFF"/>
+          <path d="M115 74 C116 71 119 69 122 69" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M18 107 C38 103 58 105 76 117 L76 121 C58 109 38 107 18 111 Z" fill="#F97316"/>
+          <path d="M142 107 C122 103 102 105 84 117 L84 121 C102 109 122 107 142 111 Z" fill="#EAB308"/>
+        </svg>
+        <h1>Comuniko AAC</h1>
+      </div>
+
+      <div class="header-actions">
+        <select id="lang-select" class="select-input" onchange="window.setLanguage(this.value)">
+          <option value="it">🇮🇹 IT</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="es">🇪🇸 ES</option>
+          <option value="fr">🇫🇷 FR</option>
+          <option value="de">🇩🇪 DE</option>
+        </select>
+
+        <button type="button" class="btn btn-accent btn-sm" id="btn-pwa-install" onclick="window.triggerPWAInstall()">
+          📲 <span id="ui-install-btn">Installa App</span>
+        </button>
+
+        <button type="button" class="btn btn-secondary btn-sm" onclick="window.openHelpModal()">
+          ❓ <span id="ui-help-btn">Aiuto</span>
+        </button>
+
+        <button type="button" class="btn btn-secondary btn-sm" onclick="window.openVocabModal()">
+          📚 <span id="ui-vocab-btn">Vocabolario</span> <span id="vocab-badge" class="counter-badge">0</span>
+        </button>
+
+        <button type="button" class="btn btn-success btn-sm" onclick="window.openPrintModal()">
+          🖨️ <span id="ui-print-btn">Stampa</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <section class="box-card no-print">
+      <div class="input-row">
+        <div class="textarea-box">
+          <textarea id="phrase-input" placeholder="Scrivi una frase... (es. Io voglio bere acqua fresca a scuola)">Io voglio bere acqua fresca a scuola</textarea>
+          <button type="button" class="btn-inline-tts" id="btn-tts-input" title="Ascolta frase scritta" onclick="window.speakOriginalPhrase()">🔊</button>
+        </div>
+        <div class="input-actions">
+          <button type="button" class="btn btn-primary" onclick="window.convertTextToAAC(false)">
+            ✨ <span id="ui-new-strip-btn">Nuova Striscia CAA</span>
+          </button>
+          <button type="button" class="btn btn-accent btn-sm" onclick="window.convertTextToAAC(true)" title="Accoda alla sequenza esistente senza cancellare">
+            ➕ <span id="ui-append-btn">Accoda Schede</span>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.clearInputText()">
+            🧹 <span id="ui-clear-input-btn">Cancella Testo</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="didactic-bar">
+        <div class="didactic-section">
+          <div class="case-toggle">
+            <button type="button" id="btn-uppercase" class="case-btn active" onclick="window.setCardCase(true)">ABC</button>
+            <button type="button" id="btn-lowercase" class="case-btn" onclick="window.setCardCase(false)">abc</button>
+          </div>
+
+          <!-- SELETTORE MODALITA' CON FRECCIA A TENDINA (▾) -->
+          <select id="text-mode-select" class="select-input" onchange="window.setTextDisplayMode(this.value)">
+            <option value="solid" id="opt-mode-solid">✍️ Testo Pieno ▾</option>
+            <option value="dashed" id="opt-mode-dashed">✏️ Tratteggiato (Ripassa) ▾</option>
+            <option value="dashes-only" id="opt-mode-dashes">📏 Solo Trattini ▾</option>
+          </select>
+
+          <div class="fading-control" title="Regola l'opacità per stimolare la memoria rievocativa e l'autonomia">
+            <span id="ui-fading-label">Fading:</span>
+            <input type="range" id="fading-range" min="0" max="100" value="100" oninput="window.setFadingOpacity(this.value)">
+            <span id="fading-val" style="min-width:32px; text-align:right;">100%</span>
+          </div>
+
+          <!-- SELETTORE VOCE CON FRECCIA A TENDINA -->
+          <div style="display:inline-flex; align-items:center; gap:6px;">
+            <span>🔊 Voce:</span>
+            <select id="voice-select" class="select-input" style="max-width:210px; font-size:0.75rem;" onchange="window.onVoiceSelected(this.value)">
+              <option value="">Caricamento voci... ▾</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="didactic-section">
+          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
+            <input type="checkbox" id="check-fitzgerald" checked onchange="window.toggleFitzgerald(this.checked)">
+            <span id="ui-check-fitz">Colori Fitzgerald</span>
+          </label>
+          <label style="display:inline-flex; align-items:center; gap:5px; cursor:pointer;">
+            <input type="checkbox" id="check-cutlines" checked onchange="window.toggleCutGuides(this.checked)">
+            <span id="ui-check-cut">Bordi Tratteggiati (✂)</span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section id="workspace-card" class="box-card">
+      <div class="strip-header no-print">
+        <div class="strip-header-title">
+          <span id="ui-strip-title">Striscia della Frase</span>
+          <span id="cards-count" class="counter-badge">0 schede</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" class="btn btn-accent btn-sm" onclick="window.openAddCardModal()">
+            ➕ <span id="ui-add-card-btn">Aggiungi Scheda</span>
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="window.speakSequence()">
+            ▶ <span id="ui-read-seq-btn">Leggi Sequenza</span>
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="window.clearAllCards()">
+            🗑️ <span id="ui-clear-board-btn">Svuota</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="workspace">
+        <div id="cards-container"></div>
+
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">🧩</div>
+          <h3 id="ui-empty-title">Nessuna scheda sulla lavagna</h3>
+          <p id="ui-empty-desc">Scrivi una frase o tocca "+ Aggiungi Scheda" per creare tessere CAA.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="legend-box no-print">
+      <div class="legend-title" id="ui-legend-title">Tipologie Chiave Fitzgerald Rigorosa (Grammatica CAA):</div>
+      <div class="legend-items">
+        <div class="legend-pill fitz-yellow"><span class="legend-dot" style="background:#FBC02D;"></span> <span id="leg-yellow">Soggetti, Pronomi</span></div>
+        <div class="legend-pill fitz-green"><span class="legend-dot" style="background:#2E7D32;"></span> <span id="leg-green">Verbi, Azioni</span></div>
+        <div class="legend-pill fitz-orange"><span class="legend-dot" style="background:#EF6C00;"></span> <span id="leg-orange">Nomi, Oggetti, Cibi</span></div>
+        <div class="legend-pill fitz-blue"><span class="legend-dot" style="background:#0288D1;"></span> <span id="leg-blue">Aggettivi</span></div>
+        <div class="legend-pill fitz-pink"><span class="legend-dot" style="background:#C2185B;"></span> <span id="leg-pink">Parole Sociali</span></div>
+        <div class="legend-pill fitz-white"><span class="legend-dot" style="background:#90A4AE;"></span> <span id="leg-white">Connettivi, Articoli</span></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer no-print">
+    <div class="footer-inner">
+      <div><strong>Comuniko AAC</strong> — Made with ❤️ by <strong>Giuseppe Schiuma</strong></div>
+      <div>
+        <span id="ui-footer-license">Rilasciato gratuitamente sotto licenza libera</span> 
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.it" target="_blank" rel="noopener">Creative Commons BY-NC-SA 4.0</a>.
+      </div>
+      <div class="footer-links">
+        <span><span id="ui-footer-symbols">Simboli</span>: <a href="https://arasaac.org" target="_blank" rel="noopener">ARASAAC</a> (CC BY-NC-SA)</span>
+        <span>•</span>
+        <button type="button" onclick="window.openHelpModal()" id="ui-footer-help">Guida all'uso</button>
+        <span>•</span>
+        <button type="button" onclick="window.openPrivacyModal()" id="ui-footer-privacy">Privacy Scuola</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: GUIDA (CON TRADUZIONE DI TUTTI I PULSANTI) -->
+  <div id="help-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'help-modal')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="help-modal-title">❓ Guida all'uso di Comuniko AAC</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closeHelpModal()">×</button>
+      </div>
+      <div class="modal-body" id="help-modal-content"></div>
+      <div class="modal-footer" style="justify-content:space-between;">
+        <button type="button" class="btn btn-secondary" id="btn-speak-help" onclick="window.toggleSpeakHelp()">
+          🔊 <span id="help-speak-btn-label">Ascolta Guida</span>
+        </button>
+        <button type="button" class="btn btn-primary" onclick="window.closeHelpModal()" id="help-close-btn">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRIVACY (CON TRADUZIONE DEL PULSANTE DI CHIUSURA) -->
+  <div id="privacy-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'privacy-modal')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="privacy-modal-title">🛡️ Informativa Privacy &amp; Tutela Minori</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closePrivacyModal()">×</button>
+      </div>
+      <div class="modal-body" id="privacy-modal-content" style="font-size:0.85rem; line-height:1.6; color:#334155;"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="window.closePrivacyModal()" id="privacy-close-btn">Ho compreso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AGGIUNGI SCHEDA -->
+  <div id="add-card-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'add-card-modal')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="addmodal-title">➕ Aggiungi Nuova Scheda CAA</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closeAddCardModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="addmodal-l1">1. Parola visualizzata e pronunciata:</label>
+          <input type="text" id="addcard-label-input" class="text-input" style="width:100%;" placeholder="Es. Bagno, Maestro Luca, Correre, Mela" oninput="window.autoSuggestFitzgeraldForAddCard(this.value)">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="addmodal-l2">2. Cerca pittogramma su ARASAAC:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="addcard-search-input" class="text-input" style="flex:1;" placeholder="Es. nuotare, bere, lavare, scuola">
+            <button type="button" class="btn btn-primary" onclick="window.searchArasaacForAddCard()" id="addmodal-btn-search">🔍 Cerca</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:800; margin-bottom:4px; color:#475569;" id="addmodal-l3">Anteprima Pittogrammi ARASAAC:</label>
+          <div id="addcard-arasaac-preview" class="preview-grid">
+            <div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#94a3b8;" id="addmodal-preview-placeholder">
+              Scrivi una parola e premi "Cerca".
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0;">
+          <img id="addcard-selected-thumb" src="https://placehold.co/60x60/e2e8f0/475569?text=IMG" style="width:50px; height:50px; object-fit:contain; border-radius:6px; background:#ffffff; border:1px solid #cbd5e1;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <input type="text" id="addcard-imgurl-input" class="text-input" style="font-size:0.75rem; padding:4px 8px;" placeholder="URL immagine selezionata">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.75rem; color:#64748b;" id="addmodal-l-or">oppure carica file foto:</span>
+              <input type="file" id="addcard-file-input" accept="image/*" style="font-size:0.75rem;" onchange="window.handleAddCardFileUpload(this)">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="addmodal-l-fitz">Tipologia Fitzgerald:</label>
+            <select id="addcard-category-select" class="select-input" style="width:100%;">
+              <option value="yellow" id="addmodal-opt-yellow">Soggetti / Pronomi</option>
+              <option value="green" id="addmodal-opt-green">Verbi / Azioni</option>
+              <option value="orange" selected id="addmodal-opt-orange">Nomi / Oggetti</option>
+              <option value="blue" id="addmodal-opt-blue">Aggettivi</option>
+              <option value="pink" id="addmodal-opt-pink">Formule Sociali</option>
+              <option value="white" id="addmodal-opt-white">Articoli / Connettivi</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="addmodal-l-pos">Posizione nella Striscia:</label>
+            <select id="addcard-position-select" class="select-input" style="width:100%;">
+              <option value="end" id="addmodal-pos-end">In coda (dopo l'ultima)</option>
+              <option value="start" id="addmodal-pos-start">In testa (prima scheda)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.closeAddCardModal()" id="addmodal-cancel">Annulla</button>
+        <button type="button" class="btn btn-success" onclick="window.submitNewCard()" id="addmodal-submit">➕ Inserisci Scheda</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: VOCABOLARIO -->
+  <div id="vocab-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'vocab-modal')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="vocabmodal-title">Dizionario &amp; Vocabolario Personale</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closeVocabModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="vocabmodal-l1">1. Parola Visualizzata / Pronunciata:</label>
+          <input type="text" id="vocab-label-input" class="text-input" style="width:100%;" placeholder="Es. Bagno, Maestro Marco, Giocare" oninput="window.autoSuggestFitzgeraldForVocab(this.value)">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="vocabmodal-l2">2. Cerca Pittogramma su ARASAAC:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="vocab-search-input" class="text-input" style="flex:1;" placeholder="Es. nuotare, bere, classe">
+            <button type="button" class="btn btn-primary" onclick="window.searchArasaacForVocab()" id="vocabmodal-btn-search">🔍 Cerca</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:800; margin-bottom:4px; color:#475569;" id="vocabmodal-l3">Anteprima Pittogrammi ARASAAC:</label>
+          <div id="vocab-arasaac-preview" class="preview-grid">
+            <div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#94a3b8;" id="vocabmodal-preview-placeholder">
+              Digita una parola e premi "Cerca".
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:12px; background:#f8fafc; padding:10px; border-radius:10px; border:1px solid #e2e8f0;">
+          <img id="vocab-selected-thumb" src="https://placehold.co/60x60/e2e8f0/475569?text=IMG" style="width:50px; height:50px; object-fit:contain; border-radius:6px; background:#ffffff; border:1px solid #cbd5e1;">
+          <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+            <input type="text" id="vocab-imgurl-input" class="text-input" style="font-size:0.75rem; padding:4px 8px;" placeholder="URL immagine selezionata">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.75rem; color:#64748b;" id="vocabmodal-l-or">oppure carica file:</span>
+              <input type="file" id="vocab-file-input" accept="image/*" style="font-size:0.75rem;" onchange="window.handleVocabFileUpload(this)">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="vocabmodal-l-fitz">Tipologia Fitzgerald:</label>
+          <select id="vocab-category-select" class="select-input" style="width:100%;">
+            <option value="yellow" id="vocabmodal-opt-yellow">Soggetti / Pronomi</option>
+            <option value="green" id="vocabmodal-opt-green">Verbi / Azioni</option>
+            <option value="orange" selected id="vocabmodal-opt-orange">Nomi / Oggetti</option>
+            <option value="blue" id="vocabmodal-opt-blue">Aggettivi</option>
+            <option value="pink" id="vocabmodal-opt-pink">Formule Sociali</option>
+            <option value="white" id="vocabmodal-opt-white">Articoli / Connettivi</option>
+          </select>
+        </div>
+
+        <button type="button" class="btn btn-success" style="width:100%; min-height:44px;" onclick="window.saveVocabItem()" id="vocabmodal-btn-save">
+          💾 Salva nel Vocabolario
+        </button>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:6px; color:#1e293b;" id="vocabmodal-l-saved">Vocaboli Salvati:</label>
+          <div id="vocab-saved-list" class="vocab-list"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.closeVocabModal()" id="vocabmodal-btn-close">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ALTERNATIVE -->
+  <div id="alt-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'alt-modal')">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="altmodal-title">Modifica Scheda &amp; Scegli Alternativa</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closeAltModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="altmodal-l1">Etichetta testo scheda:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="alt-card-label-input" class="text-input" style="flex:1;" placeholder="Etichetta scheda...">
+            <button type="button" class="btn btn-primary" onclick="window.saveActiveCardLabel()" id="altmodal-btn-save">Salva Testo</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.8rem; font-weight:800; margin-bottom:4px;" id="altmodal-l2">Cerca altro pittogramma ARASAAC:</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="alt-search-input" class="text-input" style="flex:1;" placeholder="Cerca sinonimo o azione correlata...">
+            <button type="button" class="btn btn-secondary" onclick="window.searchArasaacAlternatives()" id="altmodal-btn-search">🔍 Cerca</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:800; margin-bottom:4px; color:#475569;" id="altmodal-l3">Clicca sul pittogramma per sostituirlo:</label>
+          <div id="alt-cards-grid" class="preview-grid" style="max-height:260px;"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.closeAltModal()" id="altmodal-btn-close">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: STAMPA -->
+  <div id="print-modal" class="modal-overlay" onclick="window.onOverlayClick(event, 'print-modal')">
+    <div class="modal-box" style="max-width:500px;">
+      <div class="modal-header">
+        <h3 id="printmodal-title">Stampa / PDF per Quaderno</h3>
+        <button type="button" class="btn-close-modal" onclick="window.closePrintModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:0.85rem; color:#475569;" id="printmodal-desc">Configura l'output da incollare sul quaderno del bambino:</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div id="opt-grid" onclick="window.selectPrintFormat('grid')" style="border:2.5px solid #2563eb; background:#eff6ff; border-radius:12px; padding:12px; cursor:pointer; text-align:center;">
+            <div style="font-size:1.8rem;">✂️</div>
+            <div style="font-weight:800; font-size:0.85rem; color:#1e40af; margin-top:4px;" id="printmodal-grid-title">Griglia da Ritaglio</div>
+            <div style="font-size:0.72rem; color:#64748b;" id="printmodal-grid-sub">Tessere 5x5 cm con linee tratteggiate e forbici</div>
+          </div>
+
+          <div id="opt-strip" onclick="window.selectPrintFormat('strip')" style="border:2px solid #cbd5e1; background:#ffffff; border-radius:12px; padding:12px; cursor:pointer; text-align:center;">
+            <div style="font-size:1.8rem;">📏</div>
+            <div style="font-weight:800; font-size:0.85rem; color:#334155; margin-top:4px;" id="printmodal-strip-title">Striscia Continua</div>
+            <div style="font-size:0.72rem; color:#64748b;" id="printmodal-strip-sub">Sequenza orizzontale da incollare intera</div>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px; display:flex; flex-direction:column; gap:8px;">
+          <div style="font-size:0.8rem; font-weight:800; color:#1e293b;" id="printmodal-summary-title">Riepilogo impostazioni didattiche applicate:</div>
+          <div style="font-size:0.75rem; color:#475569;">
+            • <span id="printmodal-lbl-mode">Modalità testo</span>: <strong id="print-summary-mode">Normale</strong><br>
+            • <span id="printmodal-lbl-fading">Trasparenza Fading</span>: <strong id="print-summary-fading">100%</strong><br>
+            • <span id="printmodal-lbl-fitz">Codice Fitzgerald</span>: <strong id="print-summary-fitz">Attivo</strong>
+          </div>
+        </div>
+
+        <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:10px; padding:10px; font-size:0.75rem; color:#92400e;" id="printmodal-tip">
+          💡 Per stampare correttamente i colori delle tessere, assicurati che nel dialogo di stampa del browser sia selezionata l'opzione <strong>"Grafica di sfondo"</strong>.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="window.closePrintModal()" id="printmodal-btn-cancel">Annulla</button>
+        <button type="button" class="btn btn-success" onclick="window.triggerPrint()" id="printmodal-btn-submit">🖨️ Avvia Stampa / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">
+    <span id="toast-icon">ℹ️</span>
+    <span id="toast-text">Messaggio</span>
+  </div>
+
+  <script>
+    /* =========================================================
+       DIZIONARIO MULTILINGUA COMPLETO
+       ========================================================= */
+    const I18N_UI = {
+      it: {
+        installBtn: "Installa App",
+        helpBtn: "Aiuto",
+        vocabBtn: "Vocabolario",
+        printBtn: "Stampa",
+        inputPlaceholder: "Scrivi una frase... (es. Io voglio bere acqua fresca a scuola)",
+        newStripBtn: "Nuova Striscia CAA",
+        appendBtn: "Accoda Schede",
+        clearInputBtn: "Cancella Testo",
+        modeSolid: "✍️ Testo Pieno ▾",
+        modeDashed: "✏️ Tratteggiato (Ripassa) ▾",
+        modeDashes: "📏 Solo Trattini ▾",
+        fadingLabel: "Fading:",
+        checkFitz: "Colori Fitzgerald",
+        checkCut: "Bordi Tratteggiati (✂)",
+        stripTitle: "Striscia della Frase",
+        addCardBtn: "Aggiungi Scheda",
+        readSeqBtn: "Leggi Sequenza",
+        clearBoardBtn: "Svuota",
+        emptyTitle: "Nessuna scheda sulla lavagna",
+        emptyDesc: "Scrivi una frase o tocca '+ Aggiungi Scheda' per creare tessere CAA.",
+        legendTitle: "Tipologie Chiave Fitzgerald Rigorosa (Grammatica CAA):",
+        legYellow: "Soggetti, Pronomi",
+        legGreen: "Verbi, Azioni",
+        legOrange: "Nomi, Oggetti, Cibi",
+        legBlue: "Aggettivi",
+        legPink: "Parole Sociali",
+        legWhite: "Connettivi, Articoli",
+        footerLicense: "Rilasciato gratuitamente sotto licenza libera",
+        footerSymbols: "Simboli",
+        footerHelp: "Guida all'uso",
+        footerPrivacy: "Privacy Scuola",
+        fitzYellowOpt: "🟡 Soggetto/Pronome",
+        fitzGreenOpt: "🟢 Verbo/Azione",
+        fitzOrangeOpt: "🟠 Nome/Oggetto",
+        fitzBlueOpt: "🔵 Aggettivo",
+        fitzPinkOpt: "🌸 Sociale/Saluto",
+        fitzWhiteOpt: "⚪ Connettivo/Articolo",
+        addCardTileTitle: "Aggiungi Scheda",
+        addCardTileSub: "ARASAAC o foto",
+        cardsSuffix: "schede",
+        addModalTitle: "➕ Aggiungi Nuova Scheda CAA",
+        addModalL1: "1. Parola visualizzata e pronunciata:",
+        addModalL2: "2. Cerca pittogramma su ARASAAC:",
+        addModalL3: "Anteprima Pittogrammi ARASAAC:",
+        addModalPlaceholder: "Scrivi una parola e premi 'Cerca'.",
+        addModalOrPhoto: "oppure carica file foto:",
+        addModalFitz: "Tipologia Fitzgerald:",
+        addModalPos: "Posizione nella Striscia:",
+        addModalPosEnd: "In coda (dopo l'ultima)",
+        addModalPosStart: "In testa (prima scheda)",
+        addModalCancel: "Annulla",
+        addModalSubmit: "➕ Inserisci Scheda",
+        vocabModalTitle: "Dizionario & Vocabolario Personale",
+        vocabModalL1: "1. Parola Visualizzata / Pronunciata:",
+        vocabModalL2: "2. Cerca Pittogramma su ARASAAC:",
+        vocabModalL3: "Anteprima Pittogrammi ARASAAC:",
+        vocabModalPlaceholder: "Digita una parola e premi 'Cerca'.",
+        vocabModalOrPhoto: "oppure carica file:",
+        vocabModalFitz: "Tipologia Fitzgerald:",
+        vocabModalSave: "💾 Salva nel Vocabolario",
+        vocabModalSavedList: "Vocaboli Salvati:",
+        vocabModalClose: "Chiudi",
+        vocabModalEmpty: "Nessun vocabolo salvato finora.",
+        vocabAddToStrip: "+ Striscia",
+        altModalTitle: "Modifica Scheda & Scegli Alternativa",
+        altModalL1: "Etichetta testo scheda:",
+        altModalSaveBtn: "Salva Testo",
+        altModalL2: "Cerca altro pittogramma ARASAAC:",
+        altModalL3: "Clicca sul pittogramma per sostituirlo:",
+        altModalClose: "Chiudi",
+        altModalSearching: "Ricerca alternative...",
+        altModalEmpty: "Nessuna alternativa trovata.",
+        printModalTitle: "Stampa / PDF per Quaderno",
+        printModalDesc: "Configura l'output da incollare sul quaderno del bambino:",
+        printModalGridTitle: "Griglia da Ritaglio",
+        printModalGridSub: "Tessere 5x5 cm con linee tratteggiate e forbici",
+        printModalStripTitle: "Striscia Continua",
+        printModalStripSub: "Sequenza orizzontale da incollare intera",
+        printModalSummaryTitle: "Riepilogo impostazioni didattiche applicate:",
+        printModalLblMode: "Modalità testo",
+        printModalLblFading: "Trasparenza Fading",
+        printModalLblFitz: "Codice Fitzgerald",
+        printModalActive: "Attivo",
+        printModalInactive: "Disattivato",
+        printModalTip: "💡 Per stampare correttamente i colori delle tessere, assicurati che nel dialogo di stampa del browser sia selezionata l'opzione <strong>'Grafica di sfondo'</strong>.",
+        printModalCancel: "Annulla",
+        printModalSubmit: "🖨️ Avvia Stampa / PDF",
+        toastGenWait: "Generazione pittogrammi ARASAAC...",
+        toastGenDone: "Create schede CAA!",
+        toastAppended: "Accodate schede",
+        toastEnterSentence: "Inserisci prima una frase",
+        toastCleared: "Lavagna svuotata",
+        toastDeleted: "Scheda eliminata",
+        toastTypeUpdated: "Tipologia aggiornata!",
+        toastPictoUpdated: "Pittogramma aggiornato!",
+        toastWordSaved: "salvato nel vocabolario!",
+        toastPhotoLoaded: "Foto personale caricata!",
+        toastSpecifyLabelImg: "Inserisci etichetta e immagine",
+        toastInstallSuccess: "Applicazione installata con successo!",
+        toastLangSet: "Lingua impostata",
+        helpCloseBtn: "Chiudi",
+        privacyCloseBtn: "Ho compreso"
+      },
+      en: {
+        installBtn: "Install App",
+        helpBtn: "Help",
+        vocabBtn: "Vocabulary",
+        printBtn: "Print",
+        inputPlaceholder: "Type a sentence... (e.g. I want to drink water at school)",
+        newStripBtn: "New AAC Strip",
+        appendBtn: "Append Cards",
+        clearInputBtn: "Clear Text",
+        modeSolid: "✍️ Solid Text ▾",
+        modeDashed: "✏️ Dashed (Trace) ▾",
+        modeDashes: "📏 Dashes Only ▾",
+        fadingLabel: "Fading:",
+        checkFitz: "Fitzgerald Colors",
+        checkCut: "Cutting Borders (✂)",
+        stripTitle: "Sentence Strip",
+        addCardBtn: "Add Card",
+        readSeqBtn: "Read Sequence",
+        clearBoardBtn: "Clear",
+        emptyTitle: "No cards on the board",
+        emptyDesc: "Type a sentence or tap '+ Add Card' to create AAC pictograms.",
+        legendTitle: "Strict Fitzgerald Key Classification (AAC Grammar):",
+        legYellow: "Subjects, Pronouns",
+        legGreen: "Verbs, Actions",
+        legOrange: "Nouns, Objects, Food",
+        legBlue: "Adjectives",
+        legPink: "Social Words",
+        legWhite: "Connectors, Articles",
+        footerLicense: "Released for free under open license",
+        footerSymbols: "Symbols",
+        footerHelp: "User Guide",
+        footerPrivacy: "School Privacy",
+        fitzYellowOpt: "🟡 Subject/Pronoun",
+        fitzGreenOpt: "🟢 Verb/Action",
+        fitzOrangeOpt: "🟠 Noun/Object",
+        fitzBlueOpt: "🔵 Adjective",
+        fitzPinkOpt: "🌸 Social/Greeting",
+        fitzWhiteOpt: "⚪ Connector/Article",
+        addCardTileTitle: "Add Card",
+        addCardTileSub: "ARASAAC or photo",
+        cardsSuffix: "cards",
+        addModalTitle: "➕ Add New AAC Card",
+        addModalL1: "1. Spoken / Displayed word:",
+        addModalL2: "2. Search pictogram on ARASAAC:",
+        addModalL3: "ARASAAC Pictograms Preview:",
+        addModalPlaceholder: "Type a search word and press 'Search'.",
+        addModalOrPhoto: "or upload a photo file:",
+        addModalFitz: "Fitzgerald Category:",
+        addModalPos: "Position on Strip:",
+        addModalPosEnd: "At the end (append)",
+        addModalPosStart: "At the beginning",
+        addModalCancel: "Cancel",
+        addModalSubmit: "➕ Insert Card",
+        vocabModalTitle: "Custom Dictionary & Vocabulary",
+        vocabModalL1: "1. Spoken / Displayed word:",
+        vocabModalL2: "2. Search Pictogram on ARASAAC:",
+        vocabModalL3: "ARASAAC Pictograms Preview:",
+        vocabModalPlaceholder: "Type a word and press 'Search'.",
+        vocabModalOrPhoto: "or upload file:",
+        vocabModalFitz: "Fitzgerald Category:",
+        vocabModalSave: "💾 Save to Vocabulary",
+        vocabModalSavedList: "Saved Vocabulary Words:",
+        vocabModalClose: "Close",
+        vocabModalEmpty: "No words saved yet.",
+        vocabAddToStrip: "+ Strip",
+        altModalTitle: "Edit Card & Choose Alternative",
+        altModalL1: "Card text label:",
+        altModalSaveBtn: "Save Text",
+        altModalL2: "Search another ARASAAC pictogram:",
+        altModalL3: "Click pictogram to select alternative:",
+        altModalClose: "Close",
+        altModalSearching: "Searching alternatives...",
+        altModalEmpty: "No alternatives found.",
+        printModalTitle: "Print / PDF for School Notebook",
+        printModalDesc: "Configure output layout to paste into student's notebook:",
+        printModalGridTitle: "Cutting Grid",
+        printModalGridSub: "5x5 cm cards with scissors dashed cutting lines",
+        printModalStripTitle: "Continuous Strip",
+        printModalStripSub: "Horizontal sequence to paste as a whole strip",
+        printModalSummaryTitle: "Applied didactic settings summary:",
+        printModalLblMode: "Text mode",
+        printModalLblFading: "Fading opacity",
+        printModalLblFitz: "Fitzgerald code",
+        printModalActive: "Active",
+        printModalInactive: "Disabled",
+        printModalTip: "💡 To print card colors correctly, make sure <strong>'Background graphics'</strong> is enabled in your browser print settings.",
+        printModalCancel: "Cancel",
+        printModalSubmit: "🖨️ Print / Save PDF",
+        toastGenWait: "Fetching ARASAAC pictograms...",
+        toastGenDone: "AAC cards created!",
+        toastAppended: "Cards appended",
+        toastEnterSentence: "Please enter a sentence first",
+        toastCleared: "Board cleared",
+        toastDeleted: "Card deleted",
+        toastTypeUpdated: "Grammar category updated!",
+        toastPictoUpdated: "Pictogram updated!",
+        toastWordSaved: "saved to vocabulary!",
+        toastPhotoLoaded: "Custom photo uploaded!",
+        toastSpecifyLabelImg: "Please provide both label and image",
+        toastInstallSuccess: "App installed successfully!",
+        toastLangSet: "Language set",
+        helpCloseBtn: "Close",
+        privacyCloseBtn: "I understand"
+      },
+      es: {
+        installBtn: "Instalar App",
+        helpBtn: "Ayuda",
+        vocabBtn: "Vocabulario",
+        printBtn: "Imprimir",
+        inputPlaceholder: "Escribe una frase... (ej. Yo quiero beber agua en la escuela)",
+        newStripBtn: "Nueva Tira CAA",
+        appendBtn: "Añadir Tarjetas",
+        clearInputBtn: "Borrar Texto",
+        modeSolid: "✍️ Texto Sólido ▾",
+        modeDashed: "✏️ Punteado (Repasar) ▾",
+        modeDashes: "📏 Solo Guiones ▾",
+        fadingLabel: "Fading:",
+        checkFitz: "Colores Fitzgerald",
+        checkCut: "Bordes de Corte (✂)",
+        stripTitle: "Tira de la Frase",
+        addCardBtn: "Añadir Tarjeta",
+        readSeqBtn: "Leer Secuencia",
+        clearBoardBtn: "Vaciar",
+        emptyTitle: "No hay tarjetas en la pizarra",
+        emptyDesc: "Escribe una frase o pulsa '+ Añadir Tarjeta' para crear pictogramas.",
+        legendTitle: "Clasificación Clave Fitzgerald (Gramática CAA):",
+        legYellow: "Sujetos, Pronombres",
+        legGreen: "Verbos, Acciones",
+        legOrange: "Nombres, Objetos, Alimentos",
+        legBlue: "Adjetivos",
+        legPink: "Fórmulas Sociales",
+        legWhite: "Conectores, Artículos",
+        footerLicense: "Distribuido gratuitamente con licencia libre",
+        footerSymbols: "Símbolos",
+        footerHelp: "Guía de uso",
+        footerPrivacy: "Privacidad Escolar",
+        fitzYellowOpt: "🟡 Sujeto/Pronombre",
+        fitzGreenOpt: "🟢 Verbo/Acción",
+        fitzOrangeOpt: "🟠 Nombre/Objeto",
+        fitzBlueOpt: "🔵 Adjetivo",
+        fitzPinkOpt: "🌸 Social/Saludo",
+        fitzWhiteOpt: "⚪ Conector/Artículo",
+        addCardTileTitle: "Añadir Tarjeta",
+        addCardTileSub: "ARASAAC o foto",
+        cardsSuffix: "tarjetas",
+        addModalTitle: "➕ Añadir Nueva Tarjeta CAA",
+        addModalL1: "1. Palabra visualizada y pronunciada:",
+        addModalL2: "2. Buscar pictograma en ARASAAC:",
+        addModalL3: "Vista previa de pictogramas ARASAAC:",
+        addModalPlaceholder: "Escribe una palabra y pulsa 'Buscar'.",
+        addModalOrPhoto: "o subir archivo de foto:",
+        addModalFitz: "Categoría Fitzgerald:",
+        addModalPos: "Posición en la Tira:",
+        addModalPosEnd: "Al final (añadir)",
+        addModalPosStart: "Al principio",
+        addModalCancel: "Cancelar",
+        addModalSubmit: "➕ Insertar Tarjeta",
+        vocabModalTitle: "Diccionario y Vocabulario Personal",
+        vocabModalL1: "1. Palabra Visualizada / Pronunciada:",
+        vocabModalL2: "2. Buscar Pictograma en ARASAAC:",
+        vocabModalL3: "Vista previa de pictogramas ARASAAC:",
+        vocabModalPlaceholder: "Escribe una palabra y pulsa 'Buscar'.",
+        vocabModalOrPhoto: "o subir archivo:",
+        vocabModalFitz: "Categoría Fitzgerald:",
+        vocabModalSave: "💾 Guardar en Vocabulario",
+        vocabModalSavedList: "Vocablos Guardados:",
+        vocabModalClose: "Cerrar",
+        vocabModalEmpty: "No hay palabras guardadas todavía.",
+        vocabAddToStrip: "+ Tira",
+        altModalTitle: "Modificar Tarjeta y Elegir Alternativa",
+        altModalL1: "Texto de la tarjeta:",
+        altModalSaveBtn: "Guardar Texto",
+        altModalL2: "Buscar otro pictograma ARASAAC:",
+        altModalL3: "Haz clic en el pictograma para seleccionarlo:",
+        altModalClose: "Cerrar",
+        altModalSearching: "Buscando alternativas...",
+        altModalEmpty: "No se encontraron alternativas.",
+        printModalTitle: "Imprimir / PDF para Cuaderno",
+        printModalDesc: "Configura el diseño para pegar en el cuaderno del alumno:",
+        printModalGridTitle: "Cuadrícula para Recortar",
+        printModalGridSub: "Tarjetas 5x5 cm con líneas de corte y tijeras",
+        printModalStripTitle: "Tira Continua",
+        printModalStripSub: "Secuencia horizontal para pegar entera",
+        printModalSummaryTitle: "Resumen de ajustes didácticos aplicados:",
+        printModalLblMode: "Modo de texto",
+        printModalLblFading: "Opacidad de fading",
+        printModalLblFitz: "Código Fitzgerald",
+        printModalActive: "Activo",
+        printModalInactive: "Desactivado",
+        printModalTip: "💡 Para imprimir correctamente los colores, asegúrate de activar <strong>'Gráficos de fondo'</strong> en las opciones de impresión.",
+        printModalCancel: "Cancelar",
+        printModalSubmit: "🖨️ Iniciar Impresión / PDF",
+        toastGenWait: "Buscando pictogramas ARASAAC...",
+        toastGenDone: "¡Tarjetas CAA creadas!",
+        toastAppended: "Tarjetas añadidas",
+        toastEnterSentence: "Introduce primero una frase",
+        toastCleared: "Pizarra vaciada",
+        toastDeleted: "Tarjeta eliminada",
+        toastTypeUpdated: "¡Categoría gramatical actualizada!",
+        toastPictoUpdated: "¡Pictograma actualizado!",
+        toastWordSaved: "¡guardado en el vocabulario!",
+        toastPhotoLoaded: "¡Foto personal cargada!",
+        toastSpecifyLabelImg: "Por favor proporciona etiqueta e imagen",
+        toastInstallSuccess: "¡Aplicación instalada con éxito!",
+        toastLangSet: "Idioma configurado",
+        helpCloseBtn: "Cerrar",
+        privacyCloseBtn: "Entendido"
+      },
+      fr: {
+        installBtn: "Installer",
+        helpBtn: "Aide",
+        vocabBtn: "Vocabulaire",
+        printBtn: "Imprimer",
+        inputPlaceholder: "Écrivez une phrase... (ex. Je veux boire de l'eau à l'école)",
+        newStripBtn: "Nouvelle Bande CAA",
+        appendBtn: "Ajouter Cartes",
+        clearInputBtn: "Effacer Texte",
+        modeSolid: "✍️ Texte Plein ▾",
+        modeDashed: "✏️ Tireté (Tracer) ▾",
+        modeDashes: "📏 Tirets Seuls ▾",
+        fadingLabel: "Fading:",
+        checkFitz: "Couleurs Fitzgerald",
+        checkCut: "Bords Découpage (✂)",
+        stripTitle: "Bande de la Phrase",
+        addCardBtn: "Ajouter Carte",
+        readSeqBtn: "Lire Séquence",
+        clearBoardBtn: "Vider",
+        emptyTitle: "Aucune carte sur le tableau",
+        emptyDesc: "Écrivez une phrase ou touchez '+ Ajouter Carte' pour créer des pictogrammes.",
+        legendTitle: "Classification Clé de Fitzgerald (Grammaire CAA):",
+        legYellow: "Sujets, Pronoms",
+        legGreen: "Verbes, Actions",
+        legOrange: "Noms, Objets, Nourriture",
+        legBlue: "Adjectifs",
+        legPink: "Mots Sociaux",
+        legWhite: "Connecteurs, Articles",
+        footerLicense: "Distribué gratuitement sous licence libre",
+        footerSymbols: "Symboles",
+        footerHelp: "Guide d'utilisation",
+        footerPrivacy: "Vie Privée École",
+        fitzYellowOpt: "🟡 Sujet/Pronom",
+        fitzGreenOpt: "🟢 Verbe/Action",
+        fitzOrangeOpt: "🟠 Nom/Objet",
+        fitzBlueOpt: "🔵 Adjectif",
+        fitzPinkOpt: "🌸 Social/Salutation",
+        fitzWhiteOpt: "⚪ Connecteur/Article",
+        addCardTileTitle: "Ajouter Carte",
+        addCardTileSub: "ARASAAC ou photo",
+        cardsSuffix: "cartes",
+        addModalTitle: "➕ Ajouter une Nouvelle Carte CAA",
+        addModalL1: "1. Mot affiché et prononcé:",
+        addModalL2: "2. Chercher pictogramme ARASAAC:",
+        addModalL3: "Aperçu des Pictogrammes ARASAAC:",
+        addModalPlaceholder: "Tapez un mot et cliquez sur 'Chercher'.",
+        addModalOrPhoto: "ou charger une photo:",
+        addModalFitz: "Catégorie Fitzgerald:",
+        addModalPos: "Position sur la Bande:",
+        addModalPosEnd: "À la fin (ajouter)",
+        addModalPosStart: "Au début",
+        addModalCancel: "Annuler",
+        addModalSubmit: "➕ Insérer Carte",
+        vocabModalTitle: "Dictionnaire & Vocabulaire Personnel",
+        vocabModalL1: "1. Mot Affiché / Prononcé:",
+        vocabModalL2: "2. Chercher Pictogramme ARASAAC:",
+        vocabModalL3: "Aperçu des Pictogrammes ARASAAC:",
+        vocabModalPlaceholder: "Tapez un mot et cliquez sur 'Chercher'.",
+        vocabModalOrPhoto: "ou charger fichier:",
+        vocabModalFitz: "Catégorie Fitzgerald:",
+        vocabModalSave: "💾 Enregistrer Vocabulaire",
+        vocabModalSavedList: "Mots Enregistrés:",
+        vocabModalClose: "Fermer",
+        vocabModalEmpty: "Aucun mot enregistré pour le moment.",
+        vocabAddToStrip: "+ Bande",
+        altModalTitle: "Modifier Carte & Choisir Alternative",
+        altModalL1: "Texte de la carte:",
+        altModalSaveBtn: "Enregistrer Texte",
+        altModalL2: "Chercher un autre pictogramme ARASAAC:",
+        altModalL3: "Cliquez sur le pictogramme pour le choisir:",
+        altModalClose: "Fermer",
+        altModalSearching: "Recherche d'alternatives...",
+        altModalEmpty: "Aucune alternative trouvée.",
+        printModalTitle: "Imprimer / PDF pour Cahier",
+        printModalDesc: "Configurer la mise en page à coller dans le cahier:",
+        printModalGridTitle: "Grille à Découper",
+        printModalGridSub: "Cartes 5x5 cm avec lignes de découpe et ciseaux",
+        printModalStripTitle: "Bande Continue",
+        printModalStripSub: "Séquence horizontale à coller entière",
+        printModalSummaryTitle: "Résumé des paramètres pédagogiques:",
+        printModalLblMode: "Mode texte",
+        printModalLblFading: "Opacité fading",
+        printModalLblFitz: "Code Fitzgerald",
+        printModalActive: "Actif",
+        printModalInactive: "Désactivé",
+        printModalTip: "💡 Pour imprimer correctement les couleurs, activez <strong>'Graphismes d'arrière-plan'</strong> dans vos options d'impression.",
+        printModalCancel: "Annuler",
+        printModalSubmit: "🖨️ Lancer Impression / PDF",
+        toastGenWait: "Recherche des pictogrammes ARASAAC...",
+        toastGenDone: "Cartes CAA créées!",
+        toastAppended: "Cartes ajoutées",
+        toastEnterSentence: "Veuillez d'abord écrire une phrase",
+        toastCleared: "Tableau vidé",
+        toastDeleted: "Carte supprimée",
+        toastTypeUpdated: "Catégorie grammaticale mise à jour!",
+        toastPictoUpdated: "Pictogramme mis à jour!",
+        toastWordSaved: "enregistré dans le vocabulaire!",
+        toastPhotoLoaded: "Photo personnelle chargée!",
+        toastSpecifyLabelImg: "Veuillez indiquer le texte et l'image",
+        toastInstallSuccess: "Application installée avec succès!",
+        toastLangSet: "Langue configurée",
+        helpCloseBtn: "Fermer",
+        privacyCloseBtn: "J'ai compris"
+      },
+      de: {
+        installBtn: "App installieren",
+        helpBtn: "Hilfe",
+        vocabBtn: "Vokabular",
+        printBtn: "Drucken",
+        inputPlaceholder: "Satz eingeben... (z.B. Ich möchte in der Schule Wasser trinken)",
+        newStripBtn: "Neuer UK-Streifen",
+        appendBtn: "Karten anfügen",
+        clearInputBtn: "Text löschen",
+        modeSolid: "✍️ Normaler Text ▾",
+        modeDashed: "✏️ Gestrichelt (Nachspuren) ▾",
+        modeDashes: "📏 Nur Striche ▾",
+        fadingLabel: "Fading:",
+        checkFitz: "Fitzgerald-Farben",
+        checkCut: "Schnittränder (✂)",
+        stripTitle: "Satzstreifen",
+        addCardBtn: "Karte hinzufügen",
+        readSeqBtn: "Reihe vorlesen",
+        clearBoardBtn: "Leeren",
+        emptyTitle: "Keine Karten auf der Leiste",
+        emptyDesc: "Geben Sie einen Satz ein oder tippen Sie auf '+ Karte hinzufügen'.",
+        legendTitle: "Strikter Fitzgerald-Schlüssel (UK-Grammatik):",
+        legYellow: "Subjekte, Pronomen",
+        legGreen: "Verben, Handlungen",
+        legOrange: "Nomen, Objekte, Essen",
+        legBlue: "Adjektive",
+        legPink: "Soziale Wörter",
+        legWhite: "Konnektoren, Artikel",
+        footerLicense: "Kostenlos unter freier Lizenz veröffentlicht",
+        footerSymbols: "Symbole",
+        footerHelp: "Anleitung",
+        footerPrivacy: "Datenschutz Schule",
+        fitzYellowOpt: "🟡 Subjekt/Pronomen",
+        fitzGreenOpt: "🟢 Verb/Handlung",
+        fitzOrangeOpt: "🟠 Nomen/Objekt",
+        fitzBlueOpt: "🔵 Adjektiv",
+        fitzPinkOpt: "🌸 Sozial/Gruß",
+        fitzWhiteOpt: "⚪ Konnektor/Artikel",
+        addCardTileTitle: "Karte hinzufügen",
+        addCardTileSub: "ARASAAC oder Foto",
+        cardsSuffix: "Karten",
+        addModalTitle: "➕ Neue UK-Karte hinzufügen",
+        addModalL1: "1. Angezeigtes / gesprochenes Wort:",
+        addModalL2: "2. Symbol auf ARASAAC suchen:",
+        addModalL3: "ARASAAC Symbol-Vorschau:",
+        addModalPlaceholder: "Wort eingeben und 'Suchen' drücken.",
+        addModalOrPhoto: "oder Fotodatei hochladen:",
+        addModalFitz: "Fitzgerald-Kategorie:",
+        addModalPos: "Position auf dem Streifen:",
+        addModalPosEnd: "Am Ende (anfügen)",
+        addModalPosStart: "Am Anfang",
+        addModalCancel: "Abbrechen",
+        addModalSubmit: "➕ Karte einfügen",
+        vocabModalTitle: "Eigenes Wörterbuch & Vokabular",
+        vocabModalL1: "1. Angezeigtes / Gesprochenes Wort:",
+        vocabModalL2: "2. Symbol auf ARASAAC suchen:",
+        vocabModalL3: "ARASAAC Symbol-Vorschau:",
+        vocabModalPlaceholder: "Wort eingeben und 'Suchen' drücken.",
+        vocabModalOrPhoto: "oder Datei hochladen:",
+        vocabModalFitz: "Fitzgerald-Kategorie:",
+        vocabModalSave: "💾 Im Vokabular speichern",
+        vocabModalSavedList: "Gespeicherte Wörter:",
+        vocabModalClose: "Schließen",
+        vocabModalEmpty: "Bisher keine Wörter gespeichert.",
+        vocabAddToStrip: "+ Streifen",
+        altModalTitle: "Karte bearbeiten & Alternative wählen",
+        altModalL1: "Kartentext-Beschriftung:",
+        altModalSaveBtn: "Text speichern",
+        altModalL2: "Anderes ARASAAC-Symbol suchen:",
+        altModalL3: "Klicken Sie auf das Symbol, um es zu wählen:",
+        altModalClose: "Schließen",
+        altModalSearching: "Alternativen werden gesucht...",
+        altModalEmpty: "Keine Alternativen gefunden.",
+        printModalTitle: "Drucken / PDF für Schülerheft",
+        printModalDesc: "Layout für das Schülerheft konfigurieren:",
+        printModalGridTitle: "Schneide-Gitter",
+        printModalGridSub: "5x5 cm Kärtchen mit gestrichelten Schnittlinien",
+        printModalStripTitle: "Fortlaufender Streifen",
+        printModalStripSub: "Horizontale Sequenz zum Einkleben als Ganzes",
+        printModalSummaryTitle: "Angewendete didaktische Einstellungen:",
+        printModalLblMode: "Textmodus",
+        printModalLblFading: "Fading-Deckkraft",
+        printModalLblFitz: "Fitzgerald-Code",
+        printModalActive: "Aktiv",
+        printModalInactive: "Deaktiviert",
+        printModalTip: "💡 Aktivieren Sie <strong>'Hintergrundgrafiken'</strong> in den Druckoptionen des Browsers, um Farben korrekt zu drucken.",
+        printModalCancel: "Abbrechen",
+        printModalSubmit: "🖨️ Drucken / PDF speichern",
+        toastGenWait: "ARASAAC-Symbole werden geladen...",
+        toastGenDone: "UK-Karten erstellt!",
+        toastAppended: "Karten angefügt",
+        toastEnterSentence: "Bitte zuerst einen Satz eingeben",
+        toastCleared: "Leiste geleert",
+        toastDeleted: "Karte gelöscht",
+        toastTypeUpdated: "Grammatik-Kategorie aktualisiert!",
+        toastPictoUpdated: "Symbol aktualisiert!",
+        toastWordSaved: "im Vokabular gespeichert!",
+        toastPhotoLoaded: "Eigenes Foto hochgeladen!",
+        toastSpecifyLabelImg: "Bitte Text und Bild angeben",
+        toastInstallSuccess: "App erfolgreich installiert!",
+        toastLangSet: "Sprache eingestellt",
+        helpCloseBtn: "Schließen",
+        privacyCloseBtn: "Verstanden"
+      }
+    };
+
+    /* INFORMATIVA PRIVACY */
+    const I18N_PRIVACY = {
+      it: {
+        title: "🛡️ Informativa Privacy & Tutela Minori",
+        closeBtn: "Ho compreso",
+        body: `
+          <p><strong>1. Trattamento Locale dei Dati (No Cloud, Zero Server):</strong><br>
+          Comuniko AAC è un'applicazione didattica progettata per funzionare interamente nel browser web. Nessun dato digitato viene trasmesso, archiviato o processato su server esterni dell'autore o di terze parti.</p>
+          <p><strong>2. Salvataggio Vocabolario Locale:</strong><br>
+          Il vocabolario personalizzato viene conservato unicamente nella memoria locale del browser in uso (tecnologia <code>localStorage</code>).</p>
+          <p><strong>3. Chiamate alle API ARASAAC:</strong><br>
+          Le uniche richieste di rete sono indirizzate ai server ufficiali gratuiti di ARASAAC per cercare i pittogrammi e sono prive di qualsiasi identificatore personale.</p>
+          <p><strong>4. Conformità GDPR:</strong><br>
+          Nessun cookie pubblicitario o analitico, conforme alle disposizioni scolastiche per la tutela dei minori.</p>
+          <p><strong>5. Licenza d'Uso:</strong><br>
+          Software libero con licenza Creative Commons BY-NC-SA 4.0 di Giuseppe Schiuma.</p>
+        `
+      },
+      en: {
+        title: "🛡️ Privacy Policy & Child Safety",
+        closeBtn: "I understand",
+        body: `
+          <p><strong>1. Local-Only Processing (No Cloud):</strong><br>
+          Comuniko AAC runs entirely inside your browser. No personal data, student names, or photos are ever sent to external servers.</p>
+          <p><strong>2. Local Vocabulary Storage:</strong><br>
+          Custom vocabulary entries are saved strictly in the local browser cache (via <code>localStorage</code>).</p>
+          <p><strong>3. ARASAAC API Requests:</strong><br>
+          Requests are sent directly to ARASAAC servers to retrieve free educational pictograms without user tracking.</p>
+          <p><strong>4. GDPR Compliance:</strong><br>
+          Zero tracking cookies or analytics scripts, suitable for school environments.</p>
+          <p><strong>5. License:</strong><br>
+          Licensed under Creative Commons BY-NC-SA 4.0 by Giuseppe Schiuma.</p>
+        `
+      },
+      es: {
+        title: "🛡️ Política de Privacidad y Protección del Menor",
+        closeBtn: "Entendido",
+        body: `
+          <p><strong>1. Procesamiento 100% Local (Sin Servidores):</strong><br>
+          Comuniko AAC funciona enteramente en el navegador sin transmitir datos a servidores externos.</p>
+          <p><strong>2. Almacenamiento Local:</strong><br>
+          El vocabulario se guarda en la memoria local del navegador (vía <code>localStorage</code>).</p>
+          <p><strong>3. Consultas a la API de ARASAAC:</strong><br>
+          Conexión anónima con ARASAAC para obtener pictogramas educativos.</p>
+          <p><strong>4. Cumplimiento del RGPD:</strong><br>
+          Sin cookies de seguimiento ni recopilación de perfiles personales.</p>
+          <p><strong>5. Licencia:</strong><br>
+          Software libre bajo licencia Creative Commons BY-NC-SA 4.0 de Giuseppe Schiuma.</p>
+        `
+      },
+      fr: {
+        title: "🛡️ Politique de Confidentialité & Protection des Mineurs",
+        closeBtn: "J'ai compris",
+        body: `
+          <p><strong>1. Traitement 100% Local:</strong><br>
+          Comuniko AAC fonctionne intégralement dans le navigateur sans envoyer de données vers des serveurs distants.</p>
+          <p><strong>2. Sauvegarde Locale:</strong><br>
+          Le vocabulaire personnalisé est conservé uniquement dans la mémoire locale (technologie <code>localStorage</code>).</p>
+          <p><strong>3. Requêtes API ARASAAC:</strong><br>
+          Téléchargement anonyme des pictogrammes depuis les serveurs officiels d'ARASAAC.</p>
+          <p><strong>4. Conformité RGPD:</strong><br>
+          Zéro traqueur publicitaire, conforme aux besoins scolaires.</p>
+          <p><strong>5. Licence:</strong><br>
+          Licence Creative Commons BY-NC-SA 4.0 par Giuseppe Schiuma.</p>
+        `
+      },
+      de: {
+        title: "🛡️ Datenschutz & Schutz von Minderjährigen",
+        closeBtn: "Verstanden",
+        body: `
+          <p><strong>1. Vollständig lokale Verarbeitung (Keine Cloud):</strong><br>
+          Comuniko AAC arbeitet vollständig im Webbrowser ohne Übertragung von Nutzerdaten.</p>
+          <p><strong>2. Lokale Vokabular-Speicherung:</strong><br>
+          Vokabeln werden im lokalen Browserspeicher (via <code>localStorage</code>) abgelegt.</p>
+          <p><strong>3. ARASAAC API-Aufrufe:</strong><br>
+          Anonyme Abfrage der Symbole von den offiziellen ARASAAC-Servern.</p>
+          <p><strong>4. DSGVO-Konformität:</strong><br>
+          Keine Tracking-Cookies, vollkommen sicher für den Schuleinsatz.</p>
+          <p><strong>5. Lizenz:</strong><br>
+          Bildungssoftware unter Creative Commons BY-NC-SA 4.0 von Giuseppe Schiuma.</p>
+        `
+      }
+    };
+
+    /* MOTORE FITZGERALD */
+    const FITZGERALD_RULES = {
+      yellow: {
+        exact: new Set([
+          'io', 'tu', 'lui', 'lei', 'egli', 'ella', 'esso', 'essa', 'noi', 'voi', 'loro', 'essi', 'esse',
+          'me', 'te', 'se', 'mi', 'ti', 'si', 'ci', 'vi', 'li', 'le', 'gli', 'ne', 'chi', 'chiunque',
+          'mamma', 'mami', 'madre', 'papa', 'papà', 'papi', 'padre', 'fratello', 'sorella', 'fratellino', 'sorellina',
+          'nonno', 'nonna', 'nonni', 'zio', 'zia', 'zii', 'cugino', 'cugina',
+          'maestro', 'maestra', 'maestri', 'maestre', 'insegnante', 'educatore', 'educatrice',
+          'bambino', 'bambina', 'bambini', 'bambine', 'ragazzo', 'ragazza', 'alunno', 'alunna', 'amico', 'amica', 'compagno', 'compagna',
+          'dottore', 'dottoressa', 'medico', 'pediatra', 'terapista', 'logopedista', 'psicologo',
+          'persona', 'gente', 'uomo', 'donna', 'bebe', 'neonato',
+          'i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'who',
+          'mom', 'dad', 'father', 'mother', 'brother', 'sister', 'grandpa', 'grandma', 'teacher', 'boy', 'girl', 'friend', 'doctor',
+          'yo', 'tu', 'él', 'ella', 'nosotros', 'vosotros', 'ellos', 'ellas', 'mama', 'papa', 'maestro', 'maestra', 'niño', 'niña',
+          'je', 'tu', 'il', 'elle', 'on', 'nous', 'vous', 'ils', 'elles', 'maman', 'papa', 'maitre', 'maitresse',
+          'ich', 'du', 'er', 'sie', 'es', 'wir', 'ihr', 'mama', 'papa', 'lehrer', 'lehrerin', 'kind', 'junge', 'madchen'
+        ]),
+        suffixes: []
+      },
+      pink: {
+        exact: new Set([
+          'ciao', 'buongiorno', 'buonasera', 'buonanotte', 'arrivederci', 'addio',
+          'grazie', 'prego', 'scusa', 'scusami', 'perdonami', 'per favore', 'per piacere',
+          'si', 'sì', 'no', 'bene', 'male', 'ok', 'va bene', 'basta', 'aiuto', 'evviva', 'bravo', 'brava',
+          'auguri', 'complimenti', 'salute', 'pronto',
+          'hello', 'hi', 'goodbye', 'bye', 'thanks', 'thank you', 'please', 'sorry', 'excuse me', 'yes', 'no', 'welcome', 'okay', 'help',
+          'hola', 'adios', 'gracias', 'por favor', 'perdon', 'si', 'no', 'bien', 'mal', 'ayuda',
+          'bonjour', 'salut', 'merci', 's\'il vous plait', 'pardon', 'oui', 'non', 'd\'accord',
+          'hallo', 'tschuss', 'danke', 'bitte', 'ja', 'nein', 'entschuldigung', 'hilfe'
+        ]),
+        suffixes: []
+      },
+      white: {
+        exact: new Set([
+          'il', 'lo', 'la', 'i', 'gli', 'le', 'l',
+          'un', 'uno', 'una', 'un\'',
+          'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra',
+          'del', 'dello', 'della', 'dei', 'degli', 'delle',
+          'al', 'allo', 'alla', 'ai', 'agli', 'alle',
+          'dal', 'dallo', 'dalla', 'dai', 'dagli', 'dalle',
+          'nel', 'nello', 'nella', 'nei', 'negli', 'nelle',
+          'sul', 'sullo', 'sulla', 'sui', 'sugli', 'sulle',
+          'col', 'coi',
+          'e', 'ed', 'o', 'oppure', 'ma', 'pero', 'però', 'quindi', 'perche', 'perché', 'poiche', 'se', 'anche', 'ne', 'mentre',
+          'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 'from', 'of', 'by', 'because',
+          'el', 'la', 'los', 'las', 'un', 'una', 'unos', 'unas', 'y', 'o', 'pero', 'en', 'de', 'con', 'por', 'para',
+          'le', 'la', 'les', 'un', 'une', 'des', 'et', 'ou', 'mais', 'dans', 'sur', 'avec', 'pour',
+          'der', 'die', 'das', 'ein', 'eine', 'und', 'oder', 'aber', 'in', 'mit', 'fur', 'von', 'zu'
+        ]),
+        suffixes: []
+      },
+      green: {
+        exact: new Set([
+          'essere', 'sono', 'sei', 'e', 'è', 'siamo', 'siete', 'ero', 'eri', 'era', 'eravamo', 'eravate', 'erano', 'stato', 'stata', 'stati', 'state',
+          'avere', 'ho', 'hai', 'ha', 'abbiamo', 'avete', 'hanno', 'avevo', 'aveva', 'avuto',
+          'volere', 'voglio', 'vuoi', 'vuole', 'vogliamo', 'volete', 'vogliono', 'volevo', 'voluto',
+          'potere', 'posso', 'puoi', 'puo', 'può', 'possiamo', 'potete', 'possono', 'potevo', 'potuto',
+          'dovere', 'devo', 'devi', 'deve', 'dobbiamo', 'dovete', 'devono',
+          'andare', 'vado', 'vai', 'va', 'andiamo', 'andate', 'vanno', 'andato',
+          'venire', 'vengo', 'vieni', 'viene', 'veniamo', 'venite', 'vengono', 'venuto',
+          'fare', 'faccio', 'fai', 'fa', 'facciamo', 'fate', 'fanno', 'fatto',
+          'dire', 'dico', 'dici', 'dice', 'diciamo', 'dite', 'dicono', 'detto',
+          'dare', 'do', 'dai', 'dà', 'diamo', 'date', 'danno', 'dato',
+          'bere', 'bevo', 'bevi', 'beve', 'beviamo', 'bevete', 'bevono', 'bevuto',
+          'mangiare', 'mangio', 'mangi', 'mangia', 'mangiamo', 'mangiate', 'mangiano', 'mangiato',
+          'giocare', 'gioco', 'giochi', 'gioca', 'giochiamo', 'giocate', 'giocano', 'giocato',
+          'dormire', 'dormo', 'dormi', 'dorme', 'dormiamo', 'dormite', 'dormono', 'dormito',
+          'vedere', 'vedo', 'vedi', 'vede', 'vediamo', 'vedete', 'vedono', 'visto',
+          'guardare', 'guardi', 'guarda', 'guardiamo',
+          'sentire', 'sento', 'senti', 'sente', 'ascoltare', 'ascolto', 'ascolta',
+          'parlare', 'parlo', 'parli', 'parla', 'leggere', 'leggo', 'leggi', 'legge', 'letto',
+          'scrivere', 'scrivo', 'scrivi', 'scrive', 'scritto',
+          'disegnare', 'colorare', 'tagliare', 'incollare',
+          'correre', 'corro', 'camminare', 'cammino', 'saltare', 'salto', 'sedere', 'siediti', 'alzare', 'aprire', 'chiudere', 'lavare', 'pulire',
+          'want', 'wants', 'drink', 'drinks', 'eat', 'eats', 'go', 'goes', 'went', 'play', 'plays', 'sleep', 'sleeps',
+          'see', 'sees', 'saw', 'look', 'listen', 'hear', 'run', 'walk', 'sit', 'stand', 'open', 'close', 'wash', 'clean', 'like', 'likes'
+        ]),
+        suffixes: ['are', 'ere', 'ire', 'ando', 'endo', 'ato', 'ata', 'ati', 'ate', 'uto', 'uto', 'uti', 'ute', 'ito', 'ita', 'iti', 'ite']
+      },
+      blue: {
+        exact: new Set([
+          'rosso', 'rossa', 'rossi', 'rosse', 'blu', 'giallo', 'gialla', 'gialli', 'gialle',
+          'verde', 'verdi', 'arancione', 'arancioni', 'viola', 'rosa', 'bianco', 'bianca', 'bianchi', 'bianche',
+          'nero', 'nera', 'neri', 'nere', 'marrone', 'marroni', 'grigio', 'grigia', 'grigi', 'grigie',
+          'grande', 'grandi', 'piccolo', 'piccola', 'piccoli', 'piccole', 'alto', 'alta', 'alti', 'alte', 'basso', 'bassa', 'bassi', 'basse',
+          'lungo', 'lunga', 'lunghi', 'lunghe', 'corto', 'corta', 'corti', 'corte',
+          'tanto', 'tanta', 'tanti', 'tante', 'poco', 'poca', 'pochi', 'poche', 'molto', 'troppo',
+          'bello', 'bella', 'belli', 'belle', 'brutto', 'brutta', 'brutti', 'brutte',
+          'buono', 'buona', 'buoni', 'buone', 'cattivo', 'cattiva', 'cattivi', 'cattive',
+          'caldo', 'calda', 'caldi', 'calde', 'freddo', 'fredda', 'freddi', 'fredde',
+          'fresco', 'fresca', 'freschi', 'fresche',
+          'felice', 'felici', 'contento', 'contenta', 'triste', 'tristi', 'arrabbiato', 'arrabbiata',
+          'stanco', 'stanca', 'stanchi', 'stanche', 'malato', 'malata',
+          'pulito', 'pulita', 'sporco', 'sporca', 'pieno', 'piena', 'vuoto', 'vuota',
+          'nuovo', 'nuova', 'nuovi', 'nuove', 'vecchio', 'vecchia', 'vecchi', 'vecchie',
+          'facile', 'difficile', 'veloce', 'lento',
+          'big', 'small', 'good', 'bad', 'happy', 'sad', 'hot', 'cold', 'fresh', 'clean', 'dirty', 'red', 'blue', 'green', 'yellow', 'new', 'old'
+        ]),
+        suffixes: ['oso', 'osa', 'osi', 'ose', 'ibile', 'evole']
+      }
+    };
+
+    function classifyFitzgeraldRigorous(word) {
+      if (!word) return 'orange';
+      const clean = word.toLowerCase().trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, '');
+      if (FITZGERALD_RULES.yellow.exact.has(clean)) return 'yellow';
+      if (FITZGERALD_RULES.pink.exact.has(clean)) return 'pink';
+      if (FITZGERALD_RULES.white.exact.has(clean)) return 'white';
+      if (FITZGERALD_RULES.green.exact.has(clean)) return 'green';
+      for (const suf of FITZGERALD_RULES.green.suffixes) {
+        if (clean.length > suf.length + 2 && clean.endsWith(suf)) return 'green';
+      }
+      if (FITZGERALD_RULES.blue.exact.has(clean)) return 'blue';
+      for (const suf of FITZGERALD_RULES.blue.suffixes) {
+        if (clean.length > suf.length + 3 && clean.endsWith(suf)) return 'blue';
+      }
+      return 'orange';
+    }
+
+    const I18N_HELP = {
+      it: {
+        title: "❓ Guida all'uso di Comuniko AAC",
+        speakBtn: "Ascolta Guida",
+        stopBtn: "Ferma Lettura",
+        text: `1. Conversione Testo: Scrivi una frase e premi 'Nuova Striscia CAA'. Le tessere vengono create con la categorizzazione grammaticale Fitzgerald.
+2. Uso su Smartphone/Tablet: Tocca le schede per ascoltarle. Puoi riordinarle con le frecce oppure trascinandole con il dito sullo schermo.
+3. Installazione App: Tocca 'Installa App' in alto per aggiungerla alla schermata Home del tablet o smartphone.
+4. Scrittura e Fading: Seleziona 'Tratteggiato' per far ripassare le lettere con la matita, oppure usa 'Solo Trattini' per stimolare la scrittura autonoma. Regola lo slider di Fading per sfumare il testo.
+5. Vocabolario Personale: Salva vocaboli con immagini personalizzate o foto della classe.
+6. Stampa Quaderno: Clicca su 'Stampa' per generare le tessere con le linee guida a forbice pronte da ritagliare.`
+      },
+      en: {
+        title: "❓ Comuniko AAC User Guide",
+        speakBtn: "Listen to Guide",
+        stopBtn: "Stop Audio",
+        text: `1. Text Conversion: Type a phrase and click 'New AAC Strip'. Pictograms are automatically classified using the Fitzgerald Key.
+2. Mobile & Tablet: Tap cards to listen. Reorder them with arrows or drag them directly with touch.
+3. Install App: Tap 'Install App' at the top to add Comuniko to your Home screen.
+4. Handwriting & Fading: Use 'Dashed' mode for pencil tracing or 'Dashes Only' for independent writing. Adjust the fading slider to gradually reduce text visibility.
+5. Custom Vocabulary: Save personalized words and photos directly in your browser.
+6. School Printing: Click 'Print' to output scissor cut-out guides ready for students.`
+      },
+      es: {
+        title: "❓ Guía de Comuniko AAC",
+        speakBtn: "Escuchar Guía",
+        stopBtn: "Detener Audio",
+        text: `1. Conversión: Escribe una frase y pulsa 'Nueva Tira CAA'.
+2. Móviles y Tabletas: Toca las tarjetas para escucharlas. Muévelas con flechas o arrastrándolas con el dedo.
+3. Instalar App: Pulsa 'Instalar App' para añadirla a la pantalla de inicio.
+4. Grafomotricidad y Fading: Usa el modo punteado para repasar con lápiz o guiones para autonomía.
+5. Vocabulario: Guarda pictogramas y fotos en tu diccionario escolar.
+6. Imprimir: Genera hojas con líneas de corte para el cuaderno escolar.`
+      },
+      fr: {
+        title: "❓ Guide Comuniko CAA",
+        speakBtn: "Écouter le Guide",
+        stopBtn: "Arrêter",
+        text: `1. Conversion: Tapez une phrase et cliquez sur 'Nouvelle Bande CAA'.
+2. Mobiles et Tablettes: Touchez les cartes pour écouter. Réordonnez avec les flèches ou au doigt.
+3. Installer l'application: Touchez 'Installer' pour l'ajouter à l'écran d'accueil.
+4. Écriture guidée: Utilisez le mode tireté et le curseur d'opacité.
+5. Vocabulaire: Enregistrez des mots et photos personnalisés.
+6. Impression: Imprimez avec lignes de découpe et ciseaux pour le cahier scolaire.`
+      },
+      de: {
+        title: "❓ Comuniko UK Anleitung",
+        speakBtn: "Anleitung vorlesen",
+        stopBtn: "Stopp",
+        text: `1. Konvertierung: Geben Sie einen Satz ein und klicken Sie auf 'Neuer UK-Streifen'.
+2. Mobil & Tablet: Kärtchen antippen zum Anhören. Per Pfeiltasten oder per Touch verschieben.
+3. App installieren: Oben auf 'App installieren' tippen, um sie zum Startbildschirm hinzuzufügen.
+4. Schreibübung & Fading: Nutzen Sie gestrichelte Buchstaben und den Fading-Regler.
+5. Vokabular: Speichern Sie eigene Begriffe und Fotos.
+6. Drucken: Drucken Sie schneidefertige Kärtchen für das Schülerheft.`
+      }
+    };
+
+    /* STATO GLOBALE */
+    const state = {
+      lang: 'it',
+      cards: [],
+      activeCardIndex: null,
+      isUppercase: true,
+      textDisplayMode: 'solid',
+      fadingOpacity: 100,
+      showFitzgerald: true,
+      showCutGuides: true,
+      printFormat: 'grid',
+      customVocab: {},
+      isSpeakingHelp: false,
+      availableVoices: []
+    };
+
+    /* GESTIONE VOCI E TTS */
+    let availableVoices = [];
+    let selectedVoiceURI = '';
+
+    function getLanguageCode(lang) {
+      const map = { it: 'it-IT', en: 'en-US', es: 'es-ES', fr: 'fr-FR', de: 'de-DE' };
+      return map[lang] || 'it-IT';
+    }
+
+    function populateVoicesList() {
+      if (!('speechSynthesis' in window)) return;
+      availableVoices = window.speechSynthesis.getVoices() || [];
+      const select = document.getElementById('voice-select');
+      if (!select) return;
+
+      const currentLangCode = getLanguageCode(state.lang);
+      const prefix = currentLangCode.substring(0, 2).toLowerCase();
+
+      const filtered = availableVoices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(prefix));
+
+      select.innerHTML = '';
+      if (filtered.length === 0) {
+        select.innerHTML = `<option value="">Predefinita (${currentLangCode}) ▾</option>`;
+        return;
+      }
+
+      filtered.sort((a, b) => {
+        const aScore = /natural|enhanced|google|siri|premium/i.test(a.name) ? 2 : 1;
+        const bScore = /natural|enhanced|google|siri|premium/i.test(b.name) ? 2 : 1;
+        return bScore - aScore;
+      });
+
+      filtered.forEach((v, idx) => {
+        const opt = document.createElement('option');
+        opt.value = v.voiceURI;
+        opt.textContent = `${v.name} (${v.lang}) ▾`;
+        if (idx === 0) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      selectedVoiceURI = filtered[0].voiceURI;
+    }
+
+    window.onVoiceSelected = function(uri) {
+      selectedVoiceURI = uri;
+      const v = availableVoices.find(voice => voice.voiceURI === uri);
+      if (v) window.showToast(`Voce: ${v.name}`, "🔊");
+    };
+
+    function getChosenVoice() {
+      if (selectedVoiceURI && availableVoices.length > 0) {
+        const found = availableVoices.find(v => v.voiceURI === selectedVoiceURI);
+        if (found) return found;
+      }
+      const targetLang = getLanguageCode(state.lang);
+      const prefix = targetLang.substring(0, 2).toLowerCase();
+      const matching = availableVoices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(prefix));
+      if (matching.length > 0) {
+        const best = matching.find(v => /natural|enhanced|google|siri|premium/i.test(v.name));
+        return best || matching[0];
+      }
+      return null;
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        populateVoicesList();
+      };
+    }
+
+    window.speakText = function(text, nodeEl = null) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const targetLang = getLanguageCode(state.lang);
+      utterance.lang = targetLang;
+
+      const voice = getChosenVoice();
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      utterance.pitch = 1.0;
+      utterance.rate = (state.lang === 'en' || state.lang === 'de') ? 0.85 : 0.88;
+
+      if (nodeEl) {
+        nodeEl.classList.add('tts-active');
+        utterance.onend = () => nodeEl.classList.remove('tts-active');
+        utterance.onerror = () => nodeEl.classList.remove('tts-active');
+      }
+
+      window.speechSynthesis.speak(utterance);
+    };
+
+    window.speakCardWord = function(index) {
+      const card = state.cards[index];
+      const el = document.getElementById(`card-node-${index}`);
+      if (card) window.speakText(card.label, el);
+    };
+
+    window.speakOriginalPhrase = function() {
+      const input = document.getElementById('phrase-input');
+      if (input && input.value.trim()) window.speakText(input.value.trim());
+    };
+
+    window.speakSequence = async function() {
+      if (state.cards.length === 0) return;
+      window.speechSynthesis.cancel();
+      const targetLang = getLanguageCode(state.lang);
+      const voice = getChosenVoice();
+
+      for (let i = 0; i < state.cards.length; i++) {
+        const card = state.cards[i];
+        const el = document.getElementById(`card-node-${i}`);
+
+        await new Promise(resolve => {
+          const utterance = new SpeechSynthesisUtterance(card.label);
+          utterance.lang = targetLang;
+          if (voice) utterance.voice = voice;
+          utterance.pitch = 1.0;
+          utterance.rate = (state.lang === 'en' || state.lang === 'de') ? 0.85 : 0.88;
+
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            el.classList.add('tts-active');
+          }
+
+          utterance.onend = () => {
+            if (el) el.classList.remove('tts-active');
+            setTimeout(resolve, 180);
+          };
+          utterance.onerror = () => {
+            if (el) el.classList.remove('tts-active');
+            resolve();
+          };
+
+          window.speechSynthesis.speak(utterance);
+        });
+      }
+    };
+
+    /* TOAST */
+    let toastTimer = null;
+    window.showToast = function(message, icon = "ℹ️") {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      const iconEl = document.getElementById('toast-icon');
+      if (!toast || !text || !iconEl) return;
+      text.innerText = message;
+      iconEl.innerText = icon;
+      toast.style.display = 'flex';
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2800);
+    };
+
+    /* APPLICAZIONE TRADUZIONE DINAMICA DELL'INTERFACCIA */
+    window.applyLanguage = function(lang) {
+      state.lang = lang;
+      const dict = I18N_UI[lang] || I18N_UI.it;
+      const priv = I18N_PRIVACY[lang] || I18N_PRIVACY.it;
+
+      const elInstall = document.getElementById('ui-install-btn'); if (elInstall) elInstall.innerText = dict.installBtn;
+      const elHelp = document.getElementById('ui-help-btn'); if (elHelp) elHelp.innerText = dict.helpBtn;
+      const elVocab = document.getElementById('ui-vocab-btn'); if (elVocab) elVocab.innerText = dict.vocabBtn;
+      const elPrint = document.getElementById('ui-print-btn'); if (elPrint) elPrint.innerText = dict.printBtn;
+
+      const elPhraseInput = document.getElementById('phrase-input'); if (elPhraseInput) elPhraseInput.placeholder = dict.inputPlaceholder;
+      const elNewStrip = document.getElementById('ui-new-strip-btn'); if (elNewStrip) elNewStrip.innerText = dict.newStripBtn;
+      const elAppend = document.getElementById('ui-append-btn'); if (elAppend) elAppend.innerText = dict.appendBtn;
+      const elClearInput = document.getElementById('ui-clear-input-btn'); if (elClearInput) elClearInput.innerText = dict.clearInputBtn;
+
+      const optSolid = document.getElementById('opt-mode-solid'); if (optSolid) optSolid.innerText = dict.modeSolid;
+      const optDashed = document.getElementById('opt-mode-dashed'); if (optDashed) optDashed.innerText = dict.modeDashed;
+      const optDashes = document.getElementById('opt-mode-dashes'); if (optDashes) optDashes.innerText = dict.modeDashes;
+      const elFadingLbl = document.getElementById('ui-fading-label'); if (elFadingLbl) elFadingLbl.innerText = dict.fadingLabel;
+      const elCheckFitz = document.getElementById('ui-check-fitz'); if (elCheckFitz) elCheckFitz.innerText = dict.checkFitz;
+      const elCheckCut = document.getElementById('ui-check-cut'); if (elCheckCut) elCheckCut.innerText = dict.checkCut;
+
+      const elStripTitle = document.getElementById('ui-strip-title'); if (elStripTitle) elStripTitle.innerText = dict.stripTitle;
+      const elAddCard = document.getElementById('ui-add-card-btn'); if (elAddCard) elAddCard.innerText = dict.addCardBtn;
+      const elReadSeq = document.getElementById('ui-read-seq-btn'); if (elReadSeq) elReadSeq.innerText = dict.readSeqBtn;
+      const elClearBoard = document.getElementById('ui-clear-board-btn'); if (elClearBoard) elClearBoard.innerText = dict.clearBoardBtn;
+
+      const elEmptyTitle = document.getElementById('ui-empty-title'); if (elEmptyTitle) elEmptyTitle.innerText = dict.emptyTitle;
+      const elEmptyDesc = document.getElementById('ui-empty-desc'); if (elEmptyDesc) elEmptyDesc.innerText = dict.emptyDesc;
+
+      const elLegendTitle = document.getElementById('ui-legend-title'); if (elLegendTitle) elLegendTitle.innerText = dict.legendTitle;
+      const legY = document.getElementById('leg-yellow'); if (legY) legY.innerText = dict.legYellow;
+      const legG = document.getElementById('leg-green'); if (legG) legG.innerText = dict.legGreen;
+      const legO = document.getElementById('leg-orange'); if (legO) legO.innerText = dict.legOrange;
+      const legB = document.getElementById('leg-blue'); if (legB) legB.innerText = dict.legBlue;
+      const legP = document.getElementById('leg-pink'); if (legP) legP.innerText = dict.legPink;
+      const legW = document.getElementById('leg-white'); if (legW) legW.innerText = dict.legWhite;
+
+      const elFooterLic = document.getElementById('ui-footer-license'); if (elFooterLic) elFooterLic.innerText = dict.footerLicense;
+      const elFooterSym = document.getElementById('ui-footer-symbols'); if (elFooterSym) elFooterSym.innerText = dict.footerSymbols;
+      const elFooterHelp = document.getElementById('ui-footer-help'); if (elFooterHelp) elFooterHelp.innerText = dict.footerHelp;
+      const elFooterPriv = document.getElementById('ui-footer-privacy'); if (elFooterPriv) elFooterPriv.innerText = dict.footerPrivacy;
+
+      // Privacy Modal (Traduzione titolo, corpo e pulsante)
+      const privTitle = document.getElementById('privacy-modal-title'); if (privTitle) privTitle.innerText = priv.title;
+      const privClose = document.getElementById('privacy-close-btn'); if (privClose) privClose.innerText = dict.privacyCloseBtn;
+      const privContent = document.getElementById('privacy-modal-content'); if (privContent) privContent.innerHTML = priv.body;
+
+      // Help Modal (Traduzione pulsante di chiusura)
+      const helpClose = document.getElementById('help-close-btn'); if (helpClose) helpClose.innerText = dict.helpCloseBtn;
+
+      // Add Card Modal
+      const addTitle = document.getElementById('addmodal-title'); if (addTitle) addTitle.innerText = dict.addModalTitle;
+      const addL1 = document.getElementById('addmodal-l1'); if (addL1) addL1.innerText = dict.addModalL1;
+      const addL2 = document.getElementById('addmodal-l2'); if (addL2) addL2.innerText = dict.addModalL2;
+      const addL3 = document.getElementById('addmodal-l3'); if (addL3) addL3.innerText = dict.addModalL3;
+      const addPlaceholder = document.getElementById('addmodal-preview-placeholder'); if (addPlaceholder) addPlaceholder.innerText = dict.addModalPlaceholder;
+      const addOrPhoto = document.getElementById('addmodal-l-or'); if (addOrPhoto) addOrPhoto.innerText = dict.addModalOrPhoto;
+      const addLFitz = document.getElementById('addmodal-l-fitz'); if (addLFitz) addLFitz.innerText = dict.addModalFitz;
+      const addLPos = document.getElementById('addmodal-l-pos'); if (addLPos) addLPos.innerText = dict.addModalPos;
+      const addPosEnd = document.getElementById('addmodal-pos-end'); if (addPosEnd) addPosEnd.innerText = dict.addModalPosEnd;
+      const addPosStart = document.getElementById('addmodal-pos-start'); if (addPosStart) addPosStart.innerText = dict.addModalPosStart;
+      const addCancel = document.getElementById('addmodal-cancel'); if (addCancel) addCancel.innerText = dict.addModalCancel;
+      const addSubmit = document.getElementById('addmodal-submit'); if (addSubmit) addSubmit.innerText = dict.addModalSubmit;
+
+      const addOptY = document.getElementById('addmodal-opt-yellow'); if (addOptY) addOptY.innerText = dict.legYellow;
+      const addOptG = document.getElementById('addmodal-opt-green'); if (addOptG) addOptG.innerText = dict.legGreen;
+      const addOptO = document.getElementById('addmodal-opt-orange'); if (addOptO) addOptO.innerText = dict.legOrange;
+      const addOptB = document.getElementById('addmodal-opt-blue'); if (addOptB) addOptB.innerText = dict.legBlue;
+      const addOptP = document.getElementById('addmodal-opt-pink'); if (addOptP) addOptP.innerText = dict.legPink;
+      const addOptW = document.getElementById('addmodal-opt-white'); if (addOptW) addOptW.innerText = dict.legWhite;
+
+      // Vocab Modal
+      const vocabTitle = document.getElementById('vocabmodal-title'); if (vocabTitle) vocabTitle.innerText = dict.vocabModalTitle;
+      const vocabL1 = document.getElementById('vocabmodal-l1'); if (vocabL1) vocabL1.innerText = dict.vocabModalL1;
+      const vocabL2 = document.getElementById('vocabmodal-l2'); if (vocabL2) vocabL2.innerText = dict.vocabModalL2;
+      const vocabL3 = document.getElementById('vocabmodal-l3'); if (vocabL3) vocabL3.innerText = dict.vocabModalL3;
+      const vocabPlaceholder = document.getElementById('vocabmodal-preview-placeholder'); if (vocabPlaceholder) vocabPlaceholder.innerText = dict.vocabModalPlaceholder;
+      const vocabOrPhoto = document.getElementById('vocabmodal-l-or'); if (vocabOrPhoto) vocabOrPhoto.innerText = dict.vocabModalOrPhoto;
+      const vocabLFitz = document.getElementById('vocabmodal-l-fitz'); if (vocabLFitz) vocabLFitz.innerText = dict.vocabModalFitz;
+      const vocabSave = document.getElementById('vocabmodal-btn-save'); if (vocabSave) vocabSave.innerText = dict.vocabModalSave;
+      const vocabSaved = document.getElementById('vocabmodal-l-saved'); if (vocabSaved) vocabSaved.innerText = dict.vocabModalSavedList;
+      const vocabClose = document.getElementById('vocabmodal-btn-close'); if (vocabClose) vocabClose.innerText = dict.vocabModalClose;
+
+      const vocabOptY = document.getElementById('vocabmodal-opt-yellow'); if (vocabOptY) vocabOptY.innerText = dict.legYellow;
+      const vocabOptG = document.getElementById('vocabmodal-opt-green'); if (vocabOptG) vocabOptG.innerText = dict.legGreen;
+      const vocabOptO = document.getElementById('vocabmodal-opt-orange'); if (vocabOptO) vocabOptO.innerText = dict.legOrange;
+      const vocabOptB = document.getElementById('vocabmodal-opt-blue'); if (vocabOptB) vocabOptB.innerText = dict.legBlue;
+      const vocabOptP = document.getElementById('vocabmodal-opt-pink'); if (vocabOptP) vocabOptP.innerText = dict.legPink;
+      const vocabOptW = document.getElementById('vocabmodal-opt-white'); if (vocabOptW) vocabOptW.innerText = dict.legWhite;
+
+      // Alt Modal
+      const altTitle = document.getElementById('altmodal-title'); if (altTitle) altTitle.innerText = dict.altModalTitle;
+      const altL1 = document.getElementById('altmodal-l1'); if (altL1) altL1.innerText = dict.altModalL1;
+      const altSave = document.getElementById('altmodal-btn-save'); if (altSave) altSave.innerText = dict.altModalSaveBtn;
+      const altL2 = document.getElementById('altmodal-l2'); if (altL2) altL2.innerText = dict.altModalL2;
+      const altL3 = document.getElementById('altmodal-l3'); if (altL3) altL3.innerText = dict.altModalL3;
+      const altClose = document.getElementById('altmodal-btn-close'); if (altClose) altClose.innerText = dict.altModalClose;
+
+      // Print Modal
+      const prTitle = document.getElementById('printmodal-title'); if (prTitle) prTitle.innerText = dict.printModalTitle;
+      const prDesc = document.getElementById('printmodal-desc'); if (prDesc) prDesc.innerText = dict.printModalDesc;
+      const prGridT = document.getElementById('printmodal-grid-title'); if (prGridT) prGridT.innerText = dict.printModalGridTitle;
+      const prGridS = document.getElementById('printmodal-grid-sub'); if (prGridS) prGridS.innerText = dict.printModalGridSub;
+      const prStripT = document.getElementById('printmodal-strip-title'); if (prStripT) prStripT.innerText = dict.printModalStripTitle;
+      const prStripS = document.getElementById('printmodal-strip-sub'); if (prStripS) prStripS.innerText = dict.printModalStripSub;
+      const prSumT = document.getElementById('printmodal-summary-title'); if (prSumT) prSumT.innerText = dict.printModalSummaryTitle;
+      const prLblMode = document.getElementById('printmodal-lbl-mode'); if (prLblMode) prLblMode.innerText = dict.printModalLblMode;
+      const prLblFading = document.getElementById('printmodal-lbl-fading'); if (prLblFading) prLblFading.innerText = dict.printModalLblFading;
+      const prLblFitz = document.getElementById('printmodal-lbl-fitz'); if (prLblFitz) prLblFitz.innerText = dict.printModalLblFitz;
+      const prTip = document.getElementById('printmodal-tip'); if (prTip) prTip.innerHTML = dict.printModalTip;
+      const prCancel = document.getElementById('printmodal-btn-cancel'); if (prCancel) prCancel.innerText = dict.printModalCancel;
+      const prSubmit = document.getElementById('printmodal-btn-submit'); if (prSubmit) prSubmit.innerText = dict.printModalSubmit;
+
+      window.renderCards();
+      window.renderSavedVocabList();
+    };
+
+    window.setLanguage = function(lang) {
+      window.applyLanguage(lang);
+      populateVoicesList();
+      const dict = I18N_UI[lang] || I18N_UI.it;
+      window.showToast(`${dict.toastLangSet}: ${lang.toUpperCase()}`, "🌐");
+    };
+
+    /* PWA INSTALLATION */
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('btn-pwa-install');
+      if (btn) btn.style.display = 'inline-flex';
+    });
+
+    window.triggerPWAInstall = async function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          window.showToast(dict.toastInstallSuccess, "🎉");
+        }
+        deferredPrompt = null;
+      } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          alert("Per installare l'app su iPhone/iPad:\n1. Tocca l'icona 'Condividi' in basso (il quadrato con la freccia verso l'alto)\n2. Scorri e seleziona 'Aggiungi a schermata Home'.");
+        } else {
+          window.showToast("Apri il menu del browser e seleziona 'Aggiungi a schermata Home'", "📲");
+        }
+      }
+    };
+
+    /* FADING & SCRITTURA */
+    window.setCardCase = function(isUpper) {
+      state.isUppercase = isUpper;
+      document.getElementById('btn-uppercase').classList.toggle('active', isUpper);
+      document.getElementById('btn-lowercase').classList.toggle('active', !isUpper);
+      window.renderCards();
+    };
+
+    window.setTextDisplayMode = function(mode) {
+      state.textDisplayMode = mode;
+      const workspace = document.getElementById('workspace');
+      if (workspace) {
+        workspace.classList.remove('text-mode-solid', 'text-mode-dashed', 'text-mode-dashes-only');
+        workspace.classList.add(`text-mode-${mode}`);
+      }
+      window.renderCards();
+    };
+
+    window.setFadingOpacity = function(val) {
+      state.fadingOpacity = parseInt(val, 10);
+      document.getElementById('fading-val').innerText = `${state.fadingOpacity}%`;
+      document.querySelectorAll('.card-label-text').forEach(el => {
+        el.style.opacity = state.fadingOpacity / 100;
+      });
+    };
+
+    window.toggleFitzgerald = function(isChecked) {
+      state.showFitzgerald = isChecked;
+      window.renderCards();
+    };
+
+    window.toggleCutGuides = function(isChecked) {
+      state.showCutGuides = isChecked;
+      window.renderCards();
+    };
+
+    window.setCardCategory = function(index, newCategory) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      if (state.cards[index]) {
+        state.cards[index].category = newCategory;
+        window.renderCards();
+        window.showToast(dict.toastTypeUpdated, "🎨");
+      }
+    };
+
+    /* ARASAAC API */
+    async function queryArasaac(term, lang) {
+      const q = term.trim().toLowerCase();
+      if (!q) return [];
+      try {
+        const res = await fetch(`https://api.arasaac.org/v1/pictograms/${lang}/search/${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) return list;
+        }
+      } catch (e) {}
+
+      try {
+        const res = await fetch(`https://api.arasaac.org/v1/pictograms/${lang}/bestsearch/${encodeURIComponent(q)}`);
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list) && list.length > 0) return list;
+        }
+      } catch (e) {}
+
+      if (lang !== 'en') {
+        try {
+          const res = await fetch(`https://api.arasaac.org/v1/pictograms/en/bestsearch/${encodeURIComponent(q)}`);
+          if (res.ok) {
+            const list = await res.json();
+            if (Array.isArray(list) && list.length > 0) return list;
+          }
+        } catch (e) {}
+      }
+      return [];
+    }
+
+    /* CONVERSIONE FRASE */
+    window.convertTextToAAC = async function(appendMode = false) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const input = document.getElementById('phrase-input');
+      const text = input ? input.value.trim() : '';
+      if (!text) {
+        window.showToast(dict.toastEnterSentence, "✏️");
+        return;
+      }
+
+      window.showToast(dict.toastGenWait, "⏳");
+      const tokens = text.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, ' ')
+                         .split(/\s+/)
+                         .filter(t => t.length > 0);
+
+      const generated = [];
+
+      for (const token of tokens) {
+        const clean = token.toLowerCase();
+
+        if (state.customVocab[clean]) {
+          const item = state.customVocab[clean];
+          generated.push({
+            id: null,
+            label: item.label,
+            searchWord: item.searchQuery || item.label,
+            imageUrl: item.imageUrl,
+            category: item.category || classifyFitzgeraldRigorous(item.label)
+          });
+          continue;
+        }
+
+        const results = await queryArasaac(clean, state.lang);
+        let id = null;
+        let imgUrl = null;
+
+        if (results.length > 0) {
+          id = results[0]._id;
+          imgUrl = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+        }
+
+        generated.push({
+          id: id,
+          label: token,
+          searchWord: token,
+          imageUrl: imgUrl,
+          category: classifyFitzgeraldRigorous(token)
+        });
+      }
+
+      if (appendMode) {
+        state.cards = state.cards.concat(generated);
+        window.showToast(`${dict.toastAppended} (${generated.length})`, "➕");
+      } else {
+        state.cards = generated;
+        window.showToast(`${dict.toastGenDone} (${generated.length})`, "✅");
+      }
+
+      window.renderCards();
+    };
+
+    window.clearInputText = function() {
+      const input = document.getElementById('phrase-input');
+      if (input) input.value = '';
+    };
+
+    window.clearAllCards = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      state.cards = [];
+      window.renderCards();
+      window.showToast(dict.toastCleared, "🗑️");
+    };
+
+    function generateLetterDashes(word) {
+      const letters = word.split('');
+      let html = '<div class="letter-dashes-row">';
+      letters.forEach(ch => {
+        if (ch === ' ' || ch === '-') {
+          html += '<span class="letter-slot space"></span>';
+        } else {
+          html += '<span class="letter-slot"></span>';
+        }
+      });
+      html += '</div>';
+      return html;
+    }
+
+    /* RENDER DELLE TESSERE */
+    window.renderCards = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const container = document.getElementById('cards-container');
+      const emptyState = document.getElementById('empty-state');
+      const counter = document.getElementById('cards-count');
+      if (!container || !emptyState || !counter) return;
+
+      container.innerHTML = '';
+      counter.innerText = `${state.cards.length} ${dict.cardsSuffix}`;
+
+      if (state.cards.length === 0) {
+        emptyState.style.display = 'flex';
+        return;
+      }
+      emptyState.style.display = 'none';
+
+      const opacityVal = state.fadingOpacity / 100;
+
+      state.cards.forEach((card, index) => {
+        const cardEl = document.createElement('div');
+        const fitzClass = state.showFitzgerald ? `fitz-${card.category}` : 'fitz-white';
+        cardEl.className = `caa-card ${fitzClass} text-mode-${state.textDisplayMode}`;
+        cardEl.id = `card-node-${index}`;
+        cardEl.setAttribute('data-index', index);
+        cardEl.setAttribute('draggable', 'true');
+
+        if (state.showCutGuides) {
+          cardEl.style.borderStyle = 'dashed';
+        } else {
+          cardEl.style.borderStyle = 'solid';
+        }
+
+        const displayLabel = state.isUppercase ? card.label.toUpperCase() : card.label.toLowerCase();
+
+        let textContentHtml = '';
+        if (state.textDisplayMode === 'dashes-only') {
+          textContentHtml = `
+            <div class="card-label-text" style="opacity:0; height:0; overflow:hidden;">${displayLabel}</div>
+            ${generateLetterDashes(displayLabel)}
+          `;
+        } else {
+          textContentHtml = `
+            <div class="card-label-text" style="opacity:${opacityVal};" title="${displayLabel}">
+              ${displayLabel}
+            </div>
+            ${state.fadingOpacity < 80 ? generateLetterDashes(displayLabel) : ''}
+          `;
+        }
+
+        cardEl.innerHTML = `
+          <div class="card-top-bar no-print">
+            <button type="button" class="card-mini-btn" title="Sposta a sinistra" ${index === 0 ? 'disabled' : ''} onclick="event.stopPropagation(); window.moveCard(${index}, ${index - 1})">◀</button>
+            <div class="card-actions-group">
+              <button type="button" class="card-mini-btn" title="Alternative" onclick="event.stopPropagation(); window.openAltModal(${index})">🔄</button>
+              <button type="button" class="card-mini-btn" title="Ascolta" onclick="event.stopPropagation(); window.speakCardWord(${index})">🔊</button>
+              <button type="button" class="card-mini-btn" title="Elimina" style="color:#dc2626;" onclick="event.stopPropagation(); window.deleteCard(${index})">🗑️</button>
+            </div>
+            <button type="button" class="card-mini-btn" title="Sposta a destra" ${index === state.cards.length - 1 ? 'disabled' : ''} onclick="event.stopPropagation(); window.moveCard(${index}, ${index + 1})">▶</button>
+          </div>
+
+          <div class="card-text-container">
+            ${textContentHtml}
+          </div>
+
+          <div class="card-img-wrapper">
+            ${card.imageUrl ? `
+              <img src="${card.imageUrl}" alt="${card.label}" loading="lazy" onerror="this.onerror=null; this.src='https://placehold.co/120x120/f1f5f9/64748b?text=${encodeURIComponent(card.label)}';">
+            ` : `
+              <div class="card-placeholder-icon">🔲</div>
+            `}
+          </div>
+
+          <div class="card-footer-controls no-print">
+            <select class="fitz-quick-select" title="${dict.legendTitle}" onclick="event.stopPropagation();" onchange="window.setCardCategory(${index}, this.value)">
+              <option value="yellow" ${card.category === 'yellow' ? 'selected' : ''}>${dict.fitzYellowOpt}</option>
+              <option value="green" ${card.category === 'green' ? 'selected' : ''}>${dict.fitzGreenOpt}</option>
+              <option value="orange" ${card.category === 'orange' ? 'selected' : ''}>${dict.fitzOrangeOpt}</option>
+              <option value="blue" ${card.category === 'blue' ? 'selected' : ''}>${dict.fitzBlueOpt}</option>
+              <option value="pink" ${card.category === 'pink' ? 'selected' : ''}>${dict.fitzPinkOpt}</option>
+              <option value="white" ${card.category === 'white' ? 'selected' : ''}>${dict.fitzWhiteOpt}</option>
+            </select>
+            <span style="font-size:0.65rem; color:#94a3b8; font-weight:800; flex-shrink:0;">#${index + 1}</span>
+          </div>
+        `;
+
+        cardEl.addEventListener('click', (e) => {
+          if (e.target.closest('button') || e.target.closest('select')) return;
+          window.speakCardWord(index);
+        });
+
+        setupHybridDragAndDrop(cardEl, index);
+        container.appendChild(cardEl);
+      });
+
+      const addTile = document.createElement('div');
+      addTile.className = 'add-card-placeholder no-print';
+      addTile.onclick = window.openAddCardModal;
+      addTile.innerHTML = `
+        <div class="plus-circle">+</div>
+        <div style="font-weight:800; font-size:0.8rem;">${dict.addCardTileTitle}</div>
+        <div style="font-size:0.65rem; color:#64748b;">${dict.addCardTileSub}</div>
+      `;
+      container.appendChild(addTile);
+    };
+
+    window.moveCard = function(fromIndex, toIndex) {
+      if (toIndex < 0 || toIndex >= state.cards.length) return;
+      const item = state.cards.splice(fromIndex, 1)[0];
+      state.cards.splice(toIndex, 0, item);
+      window.renderCards();
+    };
+
+    window.deleteCard = function(index) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      state.cards.splice(index, 1);
+      window.renderCards();
+      window.showToast(dict.toastDeleted, "🗑️");
+    };
+
+    /* DRAG AND DROP IBRIDO */
+    let draggedCardIndex = null;
+    let touchSourceCard = null;
+    let touchSourceIndex = null;
+
+    function setupHybridDragAndDrop(el, idx) {
+      el.addEventListener('dragstart', (e) => {
+        draggedCardIndex = idx;
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', idx);
+      });
+      el.addEventListener('dragend', () => {
+        el.classList.remove('dragging');
+        document.querySelectorAll('.caa-card').forEach(c => c.classList.remove('drag-over'));
+      });
+      el.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        el.classList.add('drag-over');
+      });
+      el.addEventListener('dragleave', () => {
+        el.classList.remove('drag-over');
+      });
+      el.addEventListener('drop', (e) => {
+        e.preventDefault();
+        el.classList.remove('drag-over');
+        if (draggedCardIndex !== null && draggedCardIndex !== idx) {
+          window.moveCard(draggedCardIndex, idx);
+        }
+      });
+
+      el.addEventListener('touchstart', (e) => {
+        if (e.target.closest('button') || e.target.closest('select')) return;
+        touchSourceCard = el;
+        touchSourceIndex = idx;
+      }, { passive: true });
+
+      el.addEventListener('touchmove', (e) => {
+        if (!touchSourceCard) return;
+        const touch = e.touches[0];
+        const elemUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetCard = elemUnder ? elemUnder.closest('.caa-card') : null;
+
+        document.querySelectorAll('.caa-card').forEach(c => c.classList.remove('drag-over'));
+        if (targetCard && targetCard !== touchSourceCard) {
+          targetCard.classList.add('drag-over');
+        }
+      }, { passive: true });
+
+      el.addEventListener('touchend', (e) => {
+        if (!touchSourceCard) return;
+        const touch = e.changedTouches[0];
+        const elemUnder = document.elementFromPoint(touch.clientX, touch.clientY);
+        const targetCard = elemUnder ? elemUnder.closest('.caa-card') : null;
+
+        document.querySelectorAll('.caa-card').forEach(c => c.classList.remove('drag-over'));
+
+        if (targetCard && targetCard !== touchSourceCard) {
+          const targetIndex = parseInt(targetCard.getAttribute('data-index'), 10);
+          if (!isNaN(targetIndex) && touchSourceIndex !== null) {
+            window.moveCard(touchSourceIndex, targetIndex);
+          }
+        }
+        touchSourceCard = null;
+        touchSourceIndex = null;
+      });
+    }
+
+    /* GESTIONE MODALI (ESPOSTI GLOBALMENTE SU WINDOW) */
+    window.openHelpModal = function() {
+      const current = I18N_HELP[state.lang] || I18N_HELP.it;
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      document.getElementById('help-modal-title').innerText = current.title;
+      document.getElementById('help-modal-content').innerHTML = `
+        <div style="font-size:0.88rem; line-height:1.6; color:#334155; white-space:pre-line;">
+          ${current.text}
+        </div>
+      `;
+      document.getElementById('help-speak-btn-label').innerText = current.speakBtn;
+      document.getElementById('help-close-btn').innerText = dict.helpCloseBtn;
+      document.getElementById('help-modal').classList.add('active');
+    };
+    window.closeHelpModal = function() {
+      if (state.isSpeakingHelp) window.toggleSpeakHelp();
+      document.getElementById('help-modal').classList.remove('active');
+    };
+
+    window.toggleSpeakHelp = function() {
+      if (state.isSpeakingHelp) {
+        window.speechSynthesis.cancel();
+        state.isSpeakingHelp = false;
+        const current = I18N_HELP[state.lang] || I18N_HELP.it;
+        document.getElementById('help-speak-btn-label').innerText = current.speakBtn;
+        return;
+      }
+
+      const current = I18N_HELP[state.lang] || I18N_HELP.it;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(current.text);
+      const targetLang = getLanguageCode(state.lang);
+      u.lang = targetLang;
+      const voice = getChosenVoice();
+      if (voice) u.voice = voice;
+      u.rate = 0.9;
+      u.onend = () => {
+        state.isSpeakingHelp = false;
+        document.getElementById('help-speak-btn-label').innerText = current.speakBtn;
+      };
+      u.onerror = () => {
+        state.isSpeakingHelp = false;
+        document.getElementById('help-speak-btn-label').innerText = current.speakBtn;
+      };
+
+      state.isSpeakingHelp = true;
+      document.getElementById('help-speak-btn-label').innerText = current.stopBtn;
+      window.speechSynthesis.speak(u);
+    };
+
+    window.openPrivacyModal = function() {
+      const priv = I18N_PRIVACY[state.lang] || I18N_PRIVACY.it;
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      document.getElementById('privacy-modal-title').innerText = priv.title;
+      document.getElementById('privacy-close-btn').innerText = dict.privacyCloseBtn;
+      document.getElementById('privacy-modal-content').innerHTML = priv.body;
+      document.getElementById('privacy-modal').classList.add('active');
+    };
+    window.closePrivacyModal = function() {
+      document.getElementById('privacy-modal').classList.remove('active');
+    };
+
+    window.autoSuggestFitzgeraldForAddCard = function(val) {
+      const category = classifyFitzgeraldRigorous(val);
+      const sel = document.getElementById('addcard-category-select');
+      if (sel) sel.value = category;
+    };
+
+    window.autoSuggestFitzgeraldForVocab = function(val) {
+      const category = classifyFitzgeraldRigorous(val);
+      const sel = document.getElementById('vocab-category-select');
+      if (sel) sel.value = category;
+    };
+
+    window.openAddCardModal = function() {
+      const m = document.getElementById('add-card-modal');
+      if (m) {
+        m.classList.add('active');
+        document.getElementById('addcard-label-input').focus();
+      }
+    };
+    window.closeAddCardModal = function() {
+      const m = document.getElementById('add-card-modal');
+      if (m) m.classList.remove('active');
+    };
+
+    window.searchArasaacForAddCard = async function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const term = document.getElementById('addcard-search-input').value.trim() || document.getElementById('addcard-label-input').value.trim();
+      const grid = document.getElementById('addcard-arasaac-preview');
+      if (!grid) return;
+
+      if (!term) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#ef4444;">Inserisci una parola da cercare.</div>';
+        return;
+      }
+      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">${dict.toastGenWait}</div>`;
+
+      const results = await queryArasaac(term, state.lang);
+      grid.innerHTML = '';
+      if (results.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">Nessun risultato per "${term}".</div>`;
+        return;
+      }
+
+      results.slice(0, 24).forEach(item => {
+        const id = item._id;
+        const imgUrl = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'preview-picto-btn';
+        btn.innerHTML = `<img src="${imgUrl}" alt="#${id}" loading="lazy"><span>#${id}</span>`;
+        btn.onclick = function() {
+          document.querySelectorAll('#addcard-arasaac-preview .preview-picto-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          document.getElementById('addcard-imgurl-input').value = imgUrl;
+          document.getElementById('addcard-selected-thumb').src = imgUrl;
+          const labelInput = document.getElementById('addcard-label-input');
+          if (!labelInput.value) {
+            labelInput.value = term;
+            window.autoSuggestFitzgeraldForAddCard(term);
+          }
+        };
+        grid.appendChild(btn);
+      });
+    };
+
+    window.handleAddCardFileUpload = function(inputEl) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      if (inputEl.files && inputEl.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64 = e.target.result;
+          document.getElementById('addcard-imgurl-input').value = base64;
+          document.getElementById('addcard-selected-thumb').src = base64;
+          window.showToast(dict.toastPhotoLoaded, "📸");
+        };
+        reader.readAsDataURL(inputEl.files[0]);
+      }
+    };
+
+    window.submitNewCard = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const label = document.getElementById('addcard-label-input').value.trim();
+      const searchQuery = document.getElementById('addcard-search-input').value.trim();
+      const imageUrl = document.getElementById('addcard-imgurl-input').value.trim();
+      const category = document.getElementById('addcard-category-select').value;
+      const position = document.getElementById('addcard-position-select').value;
+
+      if (!label) {
+        window.showToast(dict.toastSpecifyLabelImg, "⚠️");
+        return;
+      }
+
+      const newCard = {
+        id: null,
+        label: label,
+        searchWord: searchQuery || label,
+        imageUrl: imageUrl || null,
+        category: category
+      };
+
+      if (position === 'start') {
+        state.cards.unshift(newCard);
+      } else {
+        state.cards.push(newCard);
+      }
+
+      window.renderCards();
+      window.closeAddCardModal();
+
+      document.getElementById('addcard-label-input').value = '';
+      document.getElementById('addcard-search-input').value = '';
+      document.getElementById('addcard-imgurl-input').value = '';
+      document.getElementById('addcard-file-input').value = '';
+      document.getElementById('addcard-selected-thumb').src = 'https://placehold.co/60x60/e2e8f0/475569?text=IMG';
+
+      window.showToast(`"${label}" +`, "✨");
+    };
+
+    /* VOCABOLARIO */
+    window.openVocabModal = function() {
+      const m = document.getElementById('vocab-modal');
+      if (m) {
+        m.classList.add('active');
+        window.renderSavedVocabList();
+      }
+    };
+    window.closeVocabModal = function() {
+      const m = document.getElementById('vocab-modal');
+      if (m) m.classList.remove('active');
+    };
+
+    function loadSavedVocabulary() {
+      try {
+        const d = localStorage.getItem('arasaac_custom_vocab_v3');
+        if (d) state.customVocab = JSON.parse(d);
+      } catch (e) {}
+      updateVocabBadge();
+    }
+    function persistVocabulary() {
+      try {
+        localStorage.setItem('arasaac_custom_vocab_v3', JSON.stringify(state.customVocab));
+      } catch (e) {}
+      updateVocabBadge();
+    }
+    function updateVocabBadge() {
+      const badge = document.getElementById('vocab-badge');
+      if (badge) badge.innerText = Object.keys(state.customVocab).length;
+    }
+
+    window.renderSavedVocabList = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const listEl = document.getElementById('vocab-saved-list');
+      if (!listEl) return;
+      const keys = Object.keys(state.customVocab);
+      if (keys.length === 0) {
+        listEl.innerHTML = `<div style="font-size:0.75rem; color:#94a3b8; text-align:center; padding:10px;">${dict.vocabModalEmpty}</div>`;
+        return;
+      }
+      listEl.innerHTML = '';
+      keys.forEach(k => {
+        const item = state.customVocab[k];
+        const row = document.createElement('div');
+        row.className = 'vocab-item';
+        row.innerHTML = `
+          <div class="vocab-item-info">
+            <img src="${item.imageUrl}" class="vocab-item-img" onerror="this.src='https://placehold.co/40x40/e2e8f0/475569?text=IMG'">
+            <div style="overflow:hidden;">
+              <div style="font-weight:800; font-size:0.8rem; color:#0f172a; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">${item.label}</div>
+              <div style="font-size:0.7rem; color:#64748b;">${item.category}</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:4px; flex-shrink:0;">
+            <button type="button" class="btn btn-accent btn-sm" onclick="window.addVocabDirectToStrip('${encodeURIComponent(k)}')">${dict.vocabAddToStrip}</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="window.deleteVocabItem('${encodeURIComponent(k)}')">🗑️️</button>
+          </div>
+        `;
+        listEl.appendChild(row);
+      });
+    };
+
+    window.addVocabDirectToStrip = function(encodedKey) {
+      const key = decodeURIComponent(encodedKey);
+      const item = state.customVocab[key];
+      if (item) {
+        state.cards.push({
+          id: null,
+          label: item.label,
+          searchWord: item.searchQuery || item.label,
+          imageUrl: item.imageUrl,
+          category: item.category || classifyFitzgeraldRigorous(item.label)
+        });
+        window.renderCards();
+        window.closeVocabModal();
+        window.showToast(`"${item.label}" +`, "➕");
+      }
+    };
+
+    window.deleteVocabItem = function(encodedKey) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const key = decodeURIComponent(encodedKey);
+      if (state.customVocab[key]) {
+        delete state.customVocab[key];
+        persistVocabulary();
+        window.renderSavedVocabList();
+        window.showToast(dict.toastDeleted, "🗑️");
+      }
+    };
+
+    window.handleVocabFileUpload = function(inputEl) {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      if (inputEl.files && inputEl.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const base64 = e.target.result;
+          document.getElementById('vocab-imgurl-input').value = base64;
+          document.getElementById('vocab-selected-thumb').src = base64;
+          window.showToast(dict.toastPhotoLoaded, "📸");
+        };
+        reader.readAsDataURL(inputEl.files[0]);
+      }
+    };
+
+    window.searchArasaacForVocab = async function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const term = document.getElementById('vocab-search-input').value.trim() || document.getElementById('vocab-label-input').value.trim();
+      const grid = document.getElementById('vocab-arasaac-preview');
+      if (!grid) return;
+      if (!term) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#ef4444;">Inserisci una parola da cercare.</div>';
+        return;
+      }
+      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">${dict.toastGenWait}</div>`;
+
+      const results = await queryArasaac(term, state.lang);
+      grid.innerHTML = '';
+      if (results.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">Nessun risultato per "${term}".</div>`;
+        return;
+      }
+
+      results.slice(0, 24).forEach(item => {
+        const id = item._id;
+        const imgUrl = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'preview-picto-btn';
+        btn.innerHTML = `<img src="${imgUrl}" alt="#${id}" loading="lazy"><span>#${id}</span>`;
+        btn.onclick = function() {
+          document.querySelectorAll('#vocab-arasaac-preview .preview-picto-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          document.getElementById('vocab-imgurl-input').value = imgUrl;
+          document.getElementById('vocab-selected-thumb').src = imgUrl;
+          const labelInput = document.getElementById('vocab-label-input');
+          if (!labelInput.value) {
+            labelInput.value = term;
+            window.autoSuggestFitzgeraldForVocab(term);
+          }
+        };
+        grid.appendChild(btn);
+      });
+    };
+
+    window.saveVocabItem = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const label = document.getElementById('vocab-label-input').value.trim();
+      const searchQuery = document.getElementById('vocab-search-input').value.trim();
+      const imageUrl = document.getElementById('vocab-imgurl-input').value.trim();
+      const category = document.getElementById('vocab-category-select').value;
+
+      if (!label || !imageUrl) {
+        window.showToast(dict.toastSpecifyLabelImg, "⚠️️");
+        return;
+      }
+
+      const key = label.toLowerCase();
+      state.customVocab[key] = {
+        label: label,
+        searchQuery: searchQuery || label,
+        imageUrl: imageUrl,
+        category: category
+      };
+      persistVocabulary();
+      window.renderSavedVocabList();
+
+      document.getElementById('vocab-label-input').value = '';
+      document.getElementById('vocab-search-input').value = '';
+      document.getElementById('vocab-imgurl-input').value = '';
+      document.getElementById('vocab-file-input').value = '';
+      document.getElementById('vocab-selected-thumb').src = 'https://placehold.co/60x60/e2e8f0/475569?text=IMG';
+
+      window.showToast(`"${label}" ${dict.toastWordSaved}`, "✅");
+    };
+
+    /* ALTERNATIVE */
+    window.openAltModal = function(index) {
+      state.activeCardIndex = index;
+      const card = state.cards[index];
+      if (!card) return;
+
+      const m = document.getElementById('alt-modal');
+      document.getElementById('alt-card-label-input').value = card.label || '';
+      document.getElementById('alt-search-input').value = card.searchWord || card.label || '';
+
+      if (m) {
+        m.classList.add('active');
+        window.searchArasaacAlternatives();
+      }
+    };
+    window.closeAltModal = function() {
+      const m = document.getElementById('alt-modal');
+      if (m) m.classList.remove('active');
+    };
+
+    window.searchArasaacAlternatives = async function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      const term = document.getElementById('alt-search-input').value.trim();
+      const grid = document.getElementById('alt-cards-grid');
+      if (!grid || !term) return;
+
+      grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">${dict.altModalSearching}</div>`;
+      const results = await queryArasaac(term, state.lang);
+      grid.innerHTML = '';
+
+      if (results.length === 0) {
+        grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:18px; font-size:0.8rem; color:#64748b;">${dict.altModalEmpty}</div>`;
+        return;
+      }
+
+      results.slice(0, 28).forEach(item => {
+        const id = item._id;
+        const imgUrl = `https://static.arasaac.org/pictograms/${id}/${id}_300.png`;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'preview-picto-btn';
+        btn.innerHTML = `<img src="${imgUrl}" alt="#${id}" loading="lazy"><span>#${id}</span>`;
+        btn.onclick = function() {
+          if (state.activeCardIndex !== null && state.cards[state.activeCardIndex]) {
+            state.cards[state.activeCardIndex].imageUrl = imgUrl;
+            state.cards[state.activeCardIndex].id = id;
+            window.renderCards();
+            window.closeAltModal();
+            window.showToast(dict.toastPictoUpdated, "✨");
+          }
+        };
+        grid.appendChild(btn);
+      });
+    };
+
+    window.saveActiveCardLabel = function() {
+      if (state.activeCardIndex !== null && state.cards[state.activeCardIndex]) {
+        const newLabel = document.getElementById('alt-card-label-input').value.trim();
+        if (!newLabel) return;
+        state.cards[state.activeCardIndex].label = newLabel;
+        state.cards[state.activeCardIndex].category = classifyFitzgeraldRigorous(newLabel);
+        window.renderCards();
+        window.showToast(`"${newLabel}"`, "✏️");
+      }
+    };
+
+    /* STAMPA */
+    window.openPrintModal = function() {
+      const dict = I18N_UI[state.lang] || I18N_UI.it;
+      if (state.cards.length === 0) {
+        window.showToast(dict.toastEnterSentence, "⚠️");
+        return;
+      }
+      document.getElementById('print-summary-mode').innerText = state.textDisplayMode === 'dashed' ? dict.modeDashed : (state.textDisplayMode === 'dashes-only' ? dict.modeDashes : dict.modeSolid);
+      document.getElementById('print-summary-fading').innerText = `${state.fadingOpacity}%`;
+      document.getElementById('print-summary-fitz').innerText = state.showFitzgerald ? dict.printModalActive : dict.printModalInactive;
+
+      const m = document.getElementById('print-modal');
+      if (m) m.classList.add('active');
+    };
+    window.closePrintModal = function() {
+      const m = document.getElementById('print-modal');
+      if (m) m.classList.remove('active');
+    };
+
+    window.selectPrintFormat = function(mode) {
+      state.printFormat = mode;
+      const optGrid = document.getElementById('opt-grid');
+      const optStrip = document.getElementById('opt-strip');
+      if (mode === 'grid') {
+        optGrid.style.borderColor = '#2563eb';
+        optGrid.style.background = '#eff6ff';
+        optStrip.style.borderColor = '#cbd5e1';
+        optStrip.style.background = '#ffffff';
+      } else {
+        optStrip.style.borderColor = '#2563eb';
+        optStrip.style.background = '#eff6ff';
+        optGrid.style.borderColor = '#cbd5e1';
+        optGrid.style.background = '#ffffff';
+      }
+    };
+
+    window.triggerPrint = function() {
+      const workspace = document.getElementById('workspace');
+      if (workspace) {
+        workspace.classList.remove('print-mode-grid', 'print-mode-strip');
+        workspace.classList.add(state.printFormat === 'grid' ? 'print-mode-grid' : 'print-mode-strip');
+      }
+      window.closePrintModal();
+      setTimeout(() => { window.print(); }, 200);
+    };
+
+    window.onOverlayClick = function(e, id) {
+      if (e.target && e.target.id === id) {
+        if (id === 'help-modal' && state.isSpeakingHelp) window.toggleSpeakHelp();
+        document.getElementById(id).classList.remove('active');
+      }
+    };
+
+    /* INIZIALIZZAZIONE SICURA AL CARICAMENTO */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSavedVocabulary();
+      window.applyLanguage('it');
+      setTimeout(populateVoicesList, 200);
+      window.convertTextToAAC(false);
+    });
+  </script>
+</body>
+</html>
