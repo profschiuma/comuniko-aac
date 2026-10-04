@@ -1344,7 +1344,7 @@
         toastTypeUpdated: "Tipologia aggiornata!",
         toastPictoUpdated: "Pittogramma aggiornato!",
         toastWordSaved: "salvato nel vocabolario!",
-        toastPhotoLoaded: "Foto personale caricata!",
+        toastPhotoLoaded: "Foto personale compressa e caricata!",
         toastSpecifyLabelImg: "Inserisci etichetta e immagine",
         toastInstallSuccess: "Applicazione installata con successo!",
         toastLangSet: "Lingua impostata",
@@ -1448,7 +1448,7 @@
         toastTypeUpdated: "Grammar category updated!",
         toastPictoUpdated: "Pictogram updated!",
         toastWordSaved: "saved to vocabulary!",
-        toastPhotoLoaded: "Custom photo uploaded!",
+        toastPhotoLoaded: "Custom photo compressed and loaded!",
         toastSpecifyLabelImg: "Please provide both label and image",
         toastInstallSuccess: "App installed successfully!",
         toastLangSet: "Language set",
@@ -1552,7 +1552,7 @@
         toastTypeUpdated: "¡Categoría gramatical actualizada!",
         toastPictoUpdated: "¡Pictograma actualizado!",
         toastWordSaved: "¡guardado en el vocabulario!",
-        toastPhotoLoaded: "¡Foto personal cargada!",
+        toastPhotoLoaded: "¡Foto comprimida y cargada!",
         toastSpecifyLabelImg: "Por favor proporciona etiqueta e imagen",
         toastInstallSuccess: "¡Aplicación instalada con éxito!",
         toastLangSet: "Idioma configurado",
@@ -1656,7 +1656,7 @@
         toastTypeUpdated: "Catégorie grammaticale mise à jour!",
         toastPictoUpdated: "Pictogramme mis à jour!",
         toastWordSaved: "enregistré dans le vocabulaire!",
-        toastPhotoLoaded: "Photo personnelle chargée!",
+        toastPhotoLoaded: "Photo compressée et chargée!",
         toastSpecifyLabelImg: "Veuillez indiquer le texte et l'image",
         toastInstallSuccess: "Application installée avec succès!",
         toastLangSet: "Langue configurée",
@@ -1760,7 +1760,7 @@
         toastTypeUpdated: "Grammatik-Kategorie aktualisiert!",
         toastPictoUpdated: "Symbol aktualisiert!",
         toastWordSaved: "im Vokabular gespeichert!",
-        toastPhotoLoaded: "Eigenes Foto hochgeladen!",
+        toastPhotoLoaded: "Foto komprimiert und geladen!",
         toastSpecifyLabelImg: "Bitte Text und Bild angeben",
         toastInstallSuccess: "App erfolgreich installiert!",
         toastLangSet: "Sprache eingestellt",
@@ -2203,6 +2203,42 @@
       toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 2800);
     };
 
+    /* COMPRESSIONE E RIDIMENSIONAMENTO CLIENT-SIDE PER FOTO SMARTPHONE */
+    function processAndCompressImage(file, maxDimension, quality, callback) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxDimension) {
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
+            }
+          } else {
+            if (height > maxDimension) {
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+          callback(compressedBase64);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
     /* APPLICAZIONE TRADUZIONE DINAMICA DELL'INTERFACCIA */
     window.applyLanguage = function(lang) {
       state.lang = lang;
@@ -2247,15 +2283,12 @@
       const elFooterHelp = document.getElementById('ui-footer-help'); if (elFooterHelp) elFooterHelp.innerText = dict.footerHelp;
       const elFooterPriv = document.getElementById('ui-footer-privacy'); if (elFooterPriv) elFooterPriv.innerText = dict.footerPrivacy;
 
-      // Privacy Modal (Traduzione titolo, corpo e pulsante)
       const privTitle = document.getElementById('privacy-modal-title'); if (privTitle) privTitle.innerText = priv.title;
       const privClose = document.getElementById('privacy-close-btn'); if (privClose) privClose.innerText = dict.privacyCloseBtn;
       const privContent = document.getElementById('privacy-modal-content'); if (privContent) privContent.innerHTML = priv.body;
 
-      // Help Modal (Traduzione pulsante di chiusura)
       const helpClose = document.getElementById('help-close-btn'); if (helpClose) helpClose.innerText = dict.helpCloseBtn;
 
-      // Add Card Modal
       const addTitle = document.getElementById('addmodal-title'); if (addTitle) addTitle.innerText = dict.addModalTitle;
       const addL1 = document.getElementById('addmodal-l1'); if (addL1) addL1.innerText = dict.addModalL1;
       const addL2 = document.getElementById('addmodal-l2'); if (addL2) addL2.innerText = dict.addModalL2;
@@ -2276,7 +2309,6 @@
       const addOptP = document.getElementById('addmodal-opt-pink'); if (addOptP) addOptP.innerText = dict.legPink;
       const addOptW = document.getElementById('addmodal-opt-white'); if (addOptW) addOptW.innerText = dict.legWhite;
 
-      // Vocab Modal
       const vocabTitle = document.getElementById('vocabmodal-title'); if (vocabTitle) vocabTitle.innerText = dict.vocabModalTitle;
       const vocabL1 = document.getElementById('vocabmodal-l1'); if (vocabL1) vocabL1.innerText = dict.vocabModalL1;
       const vocabL2 = document.getElementById('vocabmodal-l2'); if (vocabL2) vocabL2.innerText = dict.vocabModalL2;
@@ -2295,7 +2327,6 @@
       const vocabOptP = document.getElementById('vocabmodal-opt-pink'); if (vocabOptP) vocabOptP.innerText = dict.legPink;
       const vocabOptW = document.getElementById('vocabmodal-opt-white'); if (vocabOptW) vocabOptW.innerText = dict.legWhite;
 
-      // Alt Modal
       const altTitle = document.getElementById('altmodal-title'); if (altTitle) altTitle.innerText = dict.altModalTitle;
       const altL1 = document.getElementById('altmodal-l1'); if (altL1) altL1.innerText = dict.altModalL1;
       const altSave = document.getElementById('altmodal-btn-save'); if (altSave) altSave.innerText = dict.altModalSaveBtn;
@@ -2303,7 +2334,6 @@
       const altL3 = document.getElementById('altmodal-l3'); if (altL3) altL3.innerText = dict.altModalL3;
       const altClose = document.getElementById('altmodal-btn-close'); if (altClose) altClose.innerText = dict.altModalClose;
 
-      // Print Modal
       const prTitle = document.getElementById('printmodal-title'); if (prTitle) prTitle.innerText = dict.printModalTitle;
       const prDesc = document.getElementById('printmodal-desc'); if (prDesc) prDesc.innerText = dict.printModalDesc;
       const prGridT = document.getElementById('printmodal-grid-title'); if (prGridT) prGridT.innerText = dict.printModalGridTitle;
@@ -2577,7 +2607,7 @@
             <div class="card-actions-group">
               <button type="button" class="card-mini-btn" title="Alternative" onclick="event.stopPropagation(); window.openAltModal(${index})">🔄</button>
               <button type="button" class="card-mini-btn" title="Ascolta" onclick="event.stopPropagation(); window.speakCardWord(${index})">🔊</button>
-              <button type="button" class="card-mini-btn" title="Elimina" style="color:#dc2626;" onclick="event.stopPropagation(); window.deleteCard(${index})">🗑️</button>
+              <button type="button" class="card-mini-btn" title="Elimina" style="color:#dc2626;" onclick="event.stopPropagation(); window.deleteCard(${index})">🗑️️</button>
             </div>
             <button type="button" class="card-mini-btn" title="Sposta a destra" ${index === state.cards.length - 1 ? 'disabled' : ''} onclick="event.stopPropagation(); window.moveCard(${index}, ${index + 1})">▶</button>
           </div>
@@ -2710,7 +2740,7 @@
       });
     }
 
-    /* GESTIONE MODALI (ESPOSTI GLOBALMENTE SU WINDOW) */
+    /* GESTIONE MODALI */
     window.openHelpModal = function() {
       const current = I18N_HELP[state.lang] || I18N_HELP.it;
       const dict = I18N_UI[state.lang] || I18N_UI.it;
@@ -2837,17 +2867,15 @@
       });
     };
 
+    /* GESTORE FOTO ADD CARD CON COMPRESSIONE */
     window.handleAddCardFileUpload = function(inputEl) {
       const dict = I18N_UI[state.lang] || I18N_UI.it;
       if (inputEl.files && inputEl.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const base64 = e.target.result;
-          document.getElementById('addcard-imgurl-input').value = base64;
-          document.getElementById('addcard-selected-thumb').src = base64;
+        processAndCompressImage(inputEl.files[0], 400, 0.75, function(compressedBase64) {
+          document.getElementById('addcard-imgurl-input').value = compressedBase64;
+          document.getElementById('addcard-selected-thumb').src = compressedBase64;
           window.showToast(dict.toastPhotoLoaded, "📸");
-        };
-        reader.readAsDataURL(inputEl.files[0]);
+        });
       }
     };
 
@@ -2945,7 +2973,7 @@
           </div>
           <div style="display:flex; gap:4px; flex-shrink:0;">
             <button type="button" class="btn btn-accent btn-sm" onclick="window.addVocabDirectToStrip('${encodeURIComponent(k)}')">${dict.vocabAddToStrip}</button>
-            <button type="button" class="btn btn-danger btn-sm" onclick="window.deleteVocabItem('${encodeURIComponent(k)}')">🗑️️</button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="window.deleteVocabItem('${encodeURIComponent(k)}')">🗑</button>
           </div>
         `;
         listEl.appendChild(row);
@@ -2980,17 +3008,15 @@
       }
     };
 
+    /* GESTORE FOTO VOCABOLARIO CON COMPRESSIONE */
     window.handleVocabFileUpload = function(inputEl) {
       const dict = I18N_UI[state.lang] || I18N_UI.it;
       if (inputEl.files && inputEl.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const base64 = e.target.result;
-          document.getElementById('vocab-imgurl-input').value = base64;
-          document.getElementById('vocab-selected-thumb').src = base64;
+        processAndCompressImage(inputEl.files[0], 400, 0.75, function(compressedBase64) {
+          document.getElementById('vocab-imgurl-input').value = compressedBase64;
+          document.getElementById('vocab-selected-thumb').src = compressedBase64;
           window.showToast(dict.toastPhotoLoaded, "📸");
-        };
-        reader.readAsDataURL(inputEl.files[0]);
+        });
       }
     };
 
@@ -3042,7 +3068,7 @@
       const category = document.getElementById('vocab-category-select').value;
 
       if (!label || !imageUrl) {
-        window.showToast(dict.toastSpecifyLabelImg, "⚠️️");
+        window.showToast(dict.toastSpecifyLabelImg, "⚠️");
         return;
       }
 
